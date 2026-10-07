@@ -56,7 +56,7 @@ export default function Play() {
   const [hop, setHop] = useState(0);
   const [party, setParty] = useState(0);
   const [hint, setHint] = useState('');
-  const [result, setResult] = useState<{ earned: number } | null>(null);
+  const [result, setResult] = useState<{ earned: number; saved: boolean } | null>(null);
 
   const q = questions[index];
   const isCorrect = checked && picked === correctAnswer(q);
@@ -99,15 +99,21 @@ export default function Play() {
     }
     const score = answers.filter((a) => a.correct).length;
     const passed = plantId ? score >= 2 : true;
-    const earned = await finishQuiz({ level, plantId, startedAt: startedAt.current, answers, passed });
-    setResult({ earned });
+    try {
+      const earned = await finishQuiz({ level, plantId, startedAt: startedAt.current, answers, passed });
+      setResult({ earned, saved: true });
+    } catch (error) {
+      // Never leave a student stuck on the last question: show the score even if saving failed.
+      console.warn('Could not save quiz result', error);
+      setResult({ earned: 0, saved: false });
+    }
   };
 
   if (!q) return null;
 
   if (result) {
     // A passed plant quiz leads straight on to the next stop on the adventure path (across worlds too).
-    const passedPlant = Boolean(plantId && snapshot.progress[plantId]?.completed);
+    const passedPlant = result.saved && Boolean(plantId && snapshot.progress[plantId]?.completed);
     const nextPlant = passedPlant ? PLANTS[PLANTS.findIndex((p) => p.id === plantId) + 1] : undefined;
     return (
       <Results
@@ -120,6 +126,7 @@ export default function Play() {
         unlocked={Boolean(plantId && !wasCompleted && snapshot.progress[plantId]?.completed)}
         worldDone={plantId && !wasCompleted ? finishedWorld(plantId, snapshot.progress) : null}
         failedPlant={Boolean(plantId && !snapshot.progress[plantId]?.completed)}
+        saveFailed={!result.saved}
         nextPlant={nextPlant?.name}
         onNext={() => nextPlant && router.replace({ pathname: '/plant/[id]', params: { id: nextPlant.id } })}
         onAgain={() => router.replace({ pathname: '/play', params: plantId ? { plant: plantId } : { level: level! } })}
@@ -388,6 +395,7 @@ function Results({
   worldDone,
   failedPlant,
   nextPlant,
+  saveFailed,
   onNext,
   onAgain,
   onDone,
@@ -404,6 +412,8 @@ function Results({
   failedPlant: boolean;
   /** Name of the next plant on the path, when this plant's quiz is passed. */
   nextPlant?: string;
+  /** Saving the result failed; the score shows but leaves and progress didn't count. */
+  saveFailed: boolean;
   onNext: () => void;
   onAgain: () => void;
   onDone: () => void;
@@ -413,7 +423,9 @@ function Results({
   const perfect = score === total;
   const title = perfect ? 'Perfect score!' : score / total >= 0.6 ? `Great job, ${name}!` : `Nice try, ${name}!`;
   const growth = stageFor(after);
-  const line = worldDone
+  const line = saveFailed
+    ? "Oops! Your score couldn't be saved this time. Let's play it once more!"
+    : worldDone
     ? `You finished the ${worldDone.world} world!${worldDone.next ? ` ${worldDone.next} is now open!` : ' You explored every plant!'}`
     : grewUp
       ? `Wow! Binhi grew into ${growth.name}!`

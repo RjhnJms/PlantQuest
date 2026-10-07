@@ -1,4 +1,5 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
+import { Platform } from 'react-native';
 
 import type { PartKey } from '@/data/plants';
 import type { Level } from '@/data/questions';
@@ -201,6 +202,15 @@ export async function markPartTapped(
   return 0;
 }
 
+/**
+ * Runs `task` as one all-or-nothing save. On phones the transaction is exclusive, so no other query can slip in
+ * halfway through. The web build doesn't support exclusive transactions and uses a normal one.
+ */
+async function inTransaction(db: SQLiteDatabase, task: (q: SQLiteDatabase) => Promise<void>) {
+  if (Platform.OS === 'web') await db.withTransactionAsync(() => task(db));
+  else await db.withExclusiveTransactionAsync((txn) => task(txn));
+}
+
 /** Saves a finished quiz and its leaves in one transaction. Returns leaves earned. */
 export async function saveQuizAttempt(
   db: SQLiteDatabase,
@@ -210,8 +220,8 @@ export async function saveQuizAttempt(
   const total = opts.answers.length;
   const earned = score * LEAVES.correct + (score === total && total > 0 ? LEAVES.perfect : 0);
 
-  await db.withTransactionAsync(async () => {
-    const res = await db.runAsync(
+  await inTransaction(db, async (q) => {
+    const res = await q.runAsync(
       'INSERT INTO quiz_attempts (level, plant_id, started_at, finished_at, score, total) VALUES (?, ?, ?, ?, ?, ?)',
       opts.level,
       opts.plantId,
@@ -221,7 +231,7 @@ export async function saveQuizAttempt(
       total,
     );
     for (const a of opts.answers) {
-      await db.runAsync(
+      await q.runAsync(
         'INSERT INTO quiz_answers (attempt_id, question_id, chosen, is_correct) VALUES (?, ?, ?, ?)',
         res.lastInsertRowId,
         a.questionId,
@@ -229,9 +239,9 @@ export async function saveQuizAttempt(
         a.correct ? 1 : 0,
       );
     }
-    if (earned > 0) await addLeaves(db, earned, 'quiz', String(res.lastInsertRowId));
+    if (earned > 0) await addLeaves(q, earned, 'quiz', String(res.lastInsertRowId));
     if (opts.plantId && opts.passed) {
-      await db.runAsync(
+      await q.runAsync(
         'INSERT INTO plant_progress (plant_id, first_viewed_at, completed) VALUES (?, ?, 1) ON CONFLICT(plant_id) DO UPDATE SET completed = 1',
         opts.plantId,
         now(),
