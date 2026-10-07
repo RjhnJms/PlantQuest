@@ -19,7 +19,13 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#7FD4F7"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "output": "single",
@@ -51,6 +57,18 @@
     "experiments": {
       "typedRoutes": true
     },
-    "icon": "./assets/images/icon.png"
+    "icon": "./assets/images/icon.png",
+    "extra": {
+      "router": {
+        "headers": {
+          "Cross-Origin-Embedder-Policy": "credentialless",
+          "Cross-Origin-Opener-Policy": "same-origin"
+        }
+      },
+      "eas": {
+        "projectId": "7c07b947-016c-4e86-93b2-7922d5af2bca"
+      }
+    },
+    "owner": "rejohnjames"
   }
 }
