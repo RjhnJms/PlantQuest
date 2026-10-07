@@ -15,13 +15,19 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { SoundToggle } from '@/components/SoundToggle';
 import { SpeakButton } from '@/components/SpeakButton';
 import { StatPill } from '@/components/StatPill';
-import { PLANTS, type Plant } from '@/data/plants';
+import { PLANTS, plantsInWorld, WORLDS, type Plant, type World } from '@/data/plants';
 import { feedback } from '@/lib/feedback';
 import { displayName, plantStatus, stageFor, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
 import { autoSpeak } from '@/lib/speech';
 
-const TICKLES = ['Hee hee, that tickles!', 'Let us learn something new!', 'I love sunshine!', 'More leaves, please!', 'You are doing great!'];
+const TICKLES = [
+  'Hee hee, that tickles!',
+  'Let us learn something new!',
+  'I love sunshine!',
+  'More leaves, please!',
+  'You are doing great!',
+];
 
 const STOP = 84;
 const ROW = 124;
@@ -49,23 +55,10 @@ export default function Home() {
     }, []),
   );
 
-  const status = PLANTS.map((p) => plantStatus(snapshot, p.id));
-  const done = status.filter((s) => s === 'done').length;
-  const binhiLine =
-    talk ??
-    (growth.next ? `${growth.toNext} more leaves to grow!` : 'I am blooming! Thank you!');
-
-  // Stops zig-zag across the screen like a game map.
+  const statusOf = (id: string) => plantStatus(snapshot, id);
+  const done = PLANTS.filter((p) => statusOf(p.id) === 'done').length;
+  const binhiLine = talk ?? (growth.next ? `${growth.toNext} more leaves to grow!` : 'I am blooming! Thank you!');
   const pathWidth = Math.min(width, 480) - 40;
-  const xs = [0.5, 0.78, 0.5, 0.22, 0.5, 0.78].map((f) => f * pathWidth);
-  const pathD = xs
-    .map((x, i) => {
-      const y = i * ROW + STOP / 2;
-      if (i === 0) return `M${x} ${y}`;
-      const py = (i - 1) * ROW + STOP / 2;
-      return `C${xs[i - 1]} ${py + ROW / 2} ${x} ${y - ROW / 2} ${x} ${y}`;
-    })
-    .join(' ');
 
   return (
     <View className="flex-1 bg-cream">
@@ -75,8 +68,13 @@ export default function Home() {
           <SafeAreaView edges={['top']}>
             {/* Row 1: greeting (room for long names) and the sound switch. Row 2: counters. */}
             <View className="flex-row items-center justify-between px-5 pt-2">
-              <View className="mr-3 flex-shrink flex-row items-center gap-2 rounded-full bg-white py-1 pl-1 pr-4" style={{ borderBottomWidth: 3, borderBottomColor: colors.sandDark }}>
-                <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.navigate('/profile')}>
+              <View
+                className="mr-3 flex-shrink flex-row items-center gap-2 rounded-full bg-white py-1 pl-1 pr-4"
+                style={{ borderBottomWidth: 3, borderBottomColor: colors.sandDark }}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Open profile"
+                  onPress={() => router.navigate('/profile')}>
                   <Avatar id={snapshot.profile.avatar} size={38} />
                 </Pressable>
                 <Text className="flex-shrink font-heading text-[18px] text-ink" numberOfLines={1}>
@@ -94,7 +92,9 @@ export default function Home() {
 
         {/* Binhi card overlaps the hills */}
         <View className="-mt-16 px-5">
-          <View className="flex-row items-center gap-3 rounded-3xl bg-white p-4" style={{ borderBottomWidth: 6, borderBottomColor: colors.sandDark }}>
+          <View
+            className="flex-row items-center gap-3 rounded-3xl bg-white p-4"
+            style={{ borderBottomWidth: 6, borderBottomColor: colors.sandDark }}>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Tap Binhi"
@@ -125,23 +125,104 @@ export default function Home() {
           </Text>
         </View>
 
-        <View className="mt-12 self-center" style={{ width: pathWidth, height: (PLANTS.length - 1) * ROW + STOP + 40 }}>
-          <Svg width={pathWidth} height={(PLANTS.length - 1) * ROW + STOP} style={{ position: 'absolute' }}>
-            <Path d={pathD} stroke={colors.sandDark} strokeWidth={14} strokeLinecap="round" strokeDasharray="1 24" fill="none" />
-          </Svg>
-          {PLANTS.map((plant, i) => (
-            <PathStop
-              key={plant.id}
-              plant={plant}
-              status={status[i]}
-              left={xs[i] - STOP / 2}
-              top={i * ROW}
-              onOpen={() => router.push({ pathname: '/plant/[id]', params: { id: plant.id } })}
-            />
-          ))}
-        </View>
+        {WORLDS.map((world, i) => (
+          <WorldSection
+            key={world.id}
+            world={world}
+            number={i + 1}
+            previous={WORLDS[i - 1]}
+            pathWidth={pathWidth}
+            statusOf={statusOf}
+            onOpen={(id) => router.push({ pathname: '/plant/[id]', params: { id } })}
+          />
+        ))}
       </ScrollView>
       <ExitDialog visible={askExit} onCancel={() => setAskExit(false)} />
+    </View>
+  );
+}
+
+/** One world: a colored banner, then its plants zig-zagging like a game map. */
+function WorldSection({
+  world,
+  number,
+  previous,
+  pathWidth,
+  statusOf,
+  onOpen,
+}: {
+  world: World;
+  number: number;
+  previous?: World;
+  pathWidth: number;
+  statusOf: (id: string) => 'done' | 'current' | 'locked';
+  onOpen: (id: string) => void;
+}) {
+  const plants = plantsInWorld(world.id);
+  if (!plants.length) return null;
+  const locked = statusOf(plants[0].id) === 'locked';
+  const finished = plants.filter((p) => statusOf(p.id) === 'done').length;
+  const complete = finished === plants.length;
+
+  const xs = plants.map((_, i) => [0.5, 0.78, 0.5, 0.22][i % 4] * pathWidth);
+  const pathD = xs
+    .map((x, i) => {
+      const y = i * ROW + STOP / 2;
+      if (i === 0) return `M${x} ${y}`;
+      const py = (i - 1) * ROW + STOP / 2;
+      return `C${xs[i - 1]} ${py + ROW / 2} ${x} ${y - ROW / 2} ${x} ${y}`;
+    })
+    .join(' ');
+  const height = (plants.length - 1) * ROW + STOP;
+
+  return (
+    <View className="mt-6">
+      <View
+        className="mx-5 flex-row items-center gap-3 rounded-3xl px-4 py-3"
+        style={{
+          backgroundColor: locked ? colors.sand : world.theme.main,
+          borderBottomWidth: 6,
+          borderBottomColor: locked ? colors.sandDeep : world.theme.dark,
+        }}>
+        <View
+          className="h-12 w-12 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: locked ? colors.sandDark : 'rgba(255,255,255,0.35)' }}>
+          {locked ? (
+            <Lock size={22} color={colors.faint} strokeWidth={2.6} />
+          ) : complete ? (
+            <Check size={26} color={colors.white} strokeWidth={3.5} />
+          ) : (
+            <Text className="font-heading text-[24px] text-white">{number}</Text>
+          )}
+        </View>
+        <View className="flex-1">
+          <Text className="font-semibold text-[13px]" style={{ color: locked ? colors.faint : colors.white }}>
+            WORLD {number} · {world.meaning.toUpperCase()}
+          </Text>
+          <Text className="font-heading text-[24px]" style={{ color: locked ? colors.muted : colors.white }}>
+            {world.name}
+          </Text>
+          <Text className="font-medium text-[14px]" style={{ color: locked ? colors.muted : colors.white }}>
+            {locked && previous ? `Finish ${previous.name} to open` : `${finished} of ${plants.length} plants done`}
+          </Text>
+        </View>
+      </View>
+
+      <View className="mt-12 self-center" style={{ width: pathWidth, height: height + 24 }}>
+        <Svg width={pathWidth} height={height} style={{ position: 'absolute' }}>
+          <Path d={pathD} stroke={colors.sandDark} strokeWidth={14} strokeLinecap="round" strokeDasharray="1 24" fill="none" />
+        </Svg>
+        {plants.map((plant, i) => (
+          <PathStop
+            key={plant.id}
+            plant={plant}
+            status={statusOf(plant.id)}
+            left={xs[i] - STOP / 2}
+            top={i * ROW}
+            onOpen={() => onOpen(plant.id)}
+          />
+        ))}
+      </View>
     </View>
   );
 }
@@ -180,7 +261,14 @@ function PathStop({
         onPress={() => {
           if (locked) {
             feedback.tryAgain();
-            shake.set(withSequence(withTiming(-8, { duration: 60 }), withTiming(8, { duration: 80 }), withTiming(-5, { duration: 70 }), withTiming(0, { duration: 60 })));
+            shake.set(
+              withSequence(
+                withTiming(-8, { duration: 60 }),
+                withTiming(8, { duration: 80 }),
+                withTiming(-5, { duration: 70 }),
+                withTiming(0, { duration: 60 }),
+              ),
+            );
             autoSpeak('locked', `Finish the plant before ${plant.name} to unlock it!`);
             return;
           }
@@ -217,7 +305,9 @@ function PathStop({
         )}
       </Pressable>
       {status === 'done' ? (
-        <View className="absolute right-0 h-7 w-7 items-center justify-center rounded-full" style={{ top: -2, backgroundColor: colors.leaf, borderWidth: 3, borderColor: colors.white }}>
+        <View
+          className="absolute right-0 h-7 w-7 items-center justify-center rounded-full"
+          style={{ top: -2, backgroundColor: colors.leaf, borderWidth: 3, borderColor: colors.white }}>
           <Check size={14} color={colors.white} strokeWidth={4} />
         </View>
       ) : null}

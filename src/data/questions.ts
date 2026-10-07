@@ -28,35 +28,31 @@ export function levelForGrade(grade: number | null): Level {
 
 // DRAFT: facts and questions must be checked by a science teacher before release.
 export const QUESTIONS: Question[] = [
-  // Sunflower
-  { id: 'sun-1', plantId: 'sunflower', level: 'sprout', kind: 'tap', prompt: 'Tap the part that drinks water from the soil.', answer: 'root', explain: 'Roots drink water from the soil.' },
-  { id: 'sun-2', plantId: 'sunflower', level: 'sprout', kind: 'choice', prompt: 'What do young sunflowers turn to face?', options: ['The moon', 'The sun', 'The rain', 'The wind'], answer: 1, explain: 'Young sunflowers turn to face the sun.' },
-  { id: 'sun-3', plantId: 'sunflower', level: 'sprout', kind: 'choice', prompt: 'A sunflower head is made of many tiny…', options: ['Leaves', 'Roots', 'Flowers', 'Stems'], answer: 2, explain: 'A sunflower head is hundreds of tiny flowers.' },
-
-  // Fern
-  { id: 'fern-1', plantId: 'fern', level: 'sprout', kind: 'choice', prompt: 'Where do ferns like to grow?', options: ['Hot deserts', 'Shady, wet places', 'On snow', 'In the sea'], answer: 1, explain: 'Ferns like shady, wet places.' },
-  { id: 'fern-2', plantId: 'fern', level: 'sprout', kind: 'tap', prompt: 'Tap the frond, the leaf of the fern.', answer: 'leaf', explain: 'A fern leaf is called a frond.' },
-  { id: 'fern-3', plantId: 'fern', level: 'sprout', kind: 'choice', prompt: 'New ferns grow from tiny…', options: ['Seeds', 'Spores', 'Fruits', 'Flowers'], answer: 1, explain: 'Ferns have no seeds. They grow from spores.' },
-
-  // Cactus
-  { id: 'cac-1', plantId: 'cactus', level: 'sprout', kind: 'picture', prompt: 'Which plant stores water in its thick stem?', options: ['sunflower', 'cactus', 'fern', 'rose'], answer: 1, explain: 'A cactus stores water in its thick stem.' },
-  { id: 'cac-2', plantId: 'cactus', level: 'sprout', kind: 'choice', prompt: 'The spines of a cactus are its…', options: ['Roots', 'Flowers', 'Leaves', 'Seeds'], answer: 2, explain: 'Spines are cactus leaves. They help keep water in.' },
-  { id: 'cac-3', plantId: 'cactus', level: 'sprout', kind: 'tap', prompt: 'Tap the part that stores water.', answer: 'stem', explain: 'The thick stem stores water.' },
-
-  // Rose
-  { id: 'rose-1', plantId: 'rose', level: 'sprout', kind: 'tap', prompt: 'Tap the part with sharp thorns.', answer: 'stem', explain: 'The rose stem has thorns.' },
-  { id: 'rose-2', plantId: 'rose', level: 'sprout', kind: 'choice', prompt: 'Why does a rose have thorns?', options: ['To drink water', 'To keep animals away', 'To make food', 'To smell nice'], answer: 1, explain: 'Thorns keep animals from eating the rose.' },
-  { id: 'rose-3', plantId: 'rose', level: 'sprout', kind: 'choice', prompt: 'What do bright petals and a sweet smell call to the flower?', options: ['Bees', 'Fish', 'Rain', 'Rocks'], answer: 0, explain: 'Petals and smell call bees to the flower.' },
-
-  // Mango
-  { id: 'man-1', plantId: 'mango', level: 'sprout', kind: 'choice', prompt: 'The mango is the national ___ of the Philippines.', options: ['Flower', 'Tree', 'Fruit', 'Leaf'], answer: 2, explain: 'Mango is the national fruit of the Philippines.' },
-  { id: 'man-2', plantId: 'mango', level: 'sprout', kind: 'tap', prompt: 'Tap the trunk, the woody stem.', answer: 'stem', explain: 'A tree trunk is a hard, woody stem.' },
-  { id: 'man-3', plantId: 'mango', level: 'sprout', kind: 'choice', prompt: 'How many seeds are inside a mango fruit?', options: ['None', 'One big seed', 'Hundreds', 'Ten'], answer: 1, explain: 'A mango has one big seed inside.' },
-
-  // Sampaguita
-  { id: 'sam-1', plantId: 'sampaguita', level: 'sprout', kind: 'picture', prompt: 'Which is the national flower of the Philippines?', options: ['rose', 'sunflower', 'sampaguita', 'cactus'], answer: 2, explain: 'Sampaguita is the national flower of the Philippines.' },
+  // World 1: Bakuran
+  { id: 'sam-1', plantId: 'sampaguita', level: 'sprout', kind: 'picture', prompt: 'Which is the national flower of the Philippines?', options: ['gumamela', 'makahiya', 'sampaguita', 'kalamansi'], answer: 2, explain: 'Sampaguita is the national flower of the Philippines.' },
   { id: 'sam-2', plantId: 'sampaguita', level: 'sprout', kind: 'choice', prompt: 'What color are sampaguita flowers?', options: ['Red', 'Yellow', 'White', 'Blue'], answer: 2, explain: 'Sampaguita flowers are small and white.' },
   { id: 'sam-3', plantId: 'sampaguita', level: 'sprout', kind: 'choice', prompt: 'When do sampaguita flowers open?', options: ['In the evening', 'Only in winter', 'Never', 'At noon only'], answer: 0, explain: 'They open in the evening and smell sweetest then.' },
+
+  { id: 'gum-1', plantId: 'gumamela', level: 'sprout', kind: 'tap', prompt: 'Tap the big, bright flower.', answer: 'flower', explain: 'Gumamela has a big, bright flower.' },
+  { id: 'gum-2', plantId: 'gumamela', level: 'sprout', kind: 'choice', prompt: 'What can kids make with crushed gumamela?', options: ['Soap bubbles', 'Paper', 'Glue', 'Ice cream'], answer: 0, explain: 'Crushed gumamela in water makes bubble juice.' },
+  { id: 'gum-3', plantId: 'gumamela', level: 'sprout', kind: 'choice', prompt: 'The long tube in the middle of a gumamela flower holds the…', options: ['Roots', 'Pollen', 'Leaves', 'Water'], answer: 1, explain: 'The long tube holds the pollen.' },
+
+  { id: 'mak-1', plantId: 'makahiya', level: 'sprout', kind: 'choice', prompt: 'What happens when you touch makahiya leaves?', options: ['They fold up', 'They grow bigger', 'They change color', 'They fall off'], answer: 0, explain: 'Makahiya leaves fold up when touched.' },
+  { id: 'mak-2', plantId: 'makahiya', level: 'sprout', kind: 'choice', prompt: 'What does the word makahiya mean?', options: ['Shy', 'Happy', 'Tall', 'Sweet'], answer: 0, explain: 'Makahiya means shy, like the leaves that hide.' },
+  { id: 'mak-3', plantId: 'makahiya', level: 'sprout', kind: 'tap', prompt: 'Tap a fluffy pink flower.', answer: 'flower', explain: 'Makahiya flowers look like fluffy pink balls.' },
+
+  { id: 'kal-1', plantId: 'kalamansi', level: 'sprout', kind: 'choice', prompt: 'How does kalamansi taste?', options: ['Sour', 'Salty', 'Spicy', 'Bitter'], answer: 0, explain: 'Kalamansi is sour and full of juice.' },
+  { id: 'kal-2', plantId: 'kalamansi', level: 'sprout', kind: 'tap', prompt: 'Tap a small round fruit.', answer: 'fruit', explain: 'The small round fruits are kalamansi.' },
+  { id: 'kal-3', plantId: 'kalamansi', level: 'sprout', kind: 'choice', prompt: 'What color is a very ripe kalamansi?', options: ['Orange', 'Blue', 'Purple', 'White'], answer: 0, explain: 'Kalamansi turns from green to orange when very ripe.' },
+
+  { id: 'mal-1', plantId: 'malunggay', level: 'sprout', kind: 'picture', prompt: 'Which plant has tiny round leaves that families cook in soup?', options: ['malunggay', 'gumamela', 'kalamansi', 'sampaguita'], answer: 0, explain: 'Malunggay leaves are cooked in soup.' },
+  { id: 'mal-2', plantId: 'malunggay', level: 'sprout', kind: 'tap', prompt: 'Tap a long pod. It holds the seeds.', answer: 'fruit', explain: 'The long pods are fruits that hold the seeds.' },
+  { id: 'mal-3', plantId: 'malunggay', level: 'sprout', kind: 'choice', prompt: 'One malunggay leaf is made of many tiny…', options: ['Leaflets', 'Flowers', 'Roots', 'Thorns'], answer: 0, explain: 'One malunggay leaf has many tiny leaflets.' },
+
+  // World 2: Bukid
+  { id: 'man-1', plantId: 'mango', level: 'sprout', kind: 'choice', prompt: 'Which mango from the Philippines is famous around the world?', options: ['Carabao mango', 'Snow mango', 'Desert mango', 'Blue mango'], answer: 0, explain: 'The sweet carabao mango is famous around the world.' },
+  { id: 'man-2', plantId: 'mango', level: 'sprout', kind: 'tap', prompt: 'Tap the trunk, the woody stem.', answer: 'stem', explain: 'A tree trunk is a hard, woody stem.' },
+  { id: 'man-3', plantId: 'mango', level: 'sprout', kind: 'choice', prompt: 'How many seeds are inside a mango fruit?', options: ['None', 'One big seed', 'Hundreds', 'Ten'], answer: 1, explain: 'A mango has one big seed inside.' },
 
   // Sprout (Grades 1–4): parts, needs, kinds of plants
   { id: 'sp-1', level: 'sprout', kind: 'choice', prompt: 'Which part of the plant takes in water and minerals from the soil?', options: ['Leaf', 'Stem', 'Root', 'Flower'], answer: 2, explain: 'Roots take in water and minerals from the soil.' },
@@ -64,10 +60,10 @@ export const QUESTIONS: Question[] = [
   { id: 'sp-3', level: 'sprout', kind: 'choice', prompt: 'What does a plant need to grow?', options: ['Water, sunlight and air', 'Candy and toys', 'Only darkness', 'Only rocks'], answer: 0, explain: 'Plants need water, sunlight, air and soil.' },
   { id: 'sp-4', level: 'sprout', kind: 'choice', prompt: 'Which part carries water from the roots to the leaves?', options: ['Flower', 'Stem', 'Seed', 'Petal'], answer: 1, explain: 'The stem carries water up to the leaves.' },
   { id: 'sp-5', level: 'sprout', kind: 'choice', prompt: 'A big plant with one thick, woody trunk is a…', options: ['Grass', 'Herb', 'Tree', 'Vine'], answer: 2, explain: 'A tree has one thick, woody trunk.' },
-  { id: 'sp-6', level: 'sprout', kind: 'choice', prompt: 'A plant with a soft, weak stem that climbs is a…', options: ['Vine', 'Tree', 'Shrub', 'Cactus'], answer: 0, explain: 'A vine has a weak stem that climbs or creeps.' },
+  { id: 'sp-6', level: 'sprout', kind: 'choice', prompt: 'A plant with a soft, weak stem that climbs is a…', options: ['Vine', 'Tree', 'Shrub', 'Grass'], answer: 0, explain: 'A vine has a weak stem that climbs or creeps.' },
   { id: 'sp-7', level: 'sprout', kind: 'choice', prompt: 'What happens to a plant with no water?', options: ['It grows faster', 'It wilts and dries', 'It turns blue', 'Nothing'], answer: 1, explain: 'Without water, a plant wilts and dries up.' },
   { id: 'sp-8', level: 'sprout', kind: 'choice', prompt: 'Which part of the plant often becomes a fruit?', options: ['Root', 'Leaf', 'Flower', 'Stem'], answer: 2, explain: 'Flowers can turn into fruits with seeds inside.' },
-  { id: 'sp-9', level: 'sprout', kind: 'picture', prompt: 'Which plant grows in shady, wet places?', options: ['cactus', 'fern', 'sunflower', 'mango'], answer: 1, explain: 'Ferns grow in shady, wet places.' },
+  { id: 'sp-9', level: 'sprout', kind: 'picture', prompt: 'Which plant folds its leaves when you touch it?', options: ['gumamela', 'makahiya', 'mango', 'kalamansi'], answer: 1, explain: 'Makahiya leaves fold up when touched.' },
   { id: 'sp-10', level: 'sprout', kind: 'choice', prompt: 'Which part holds the plant in the ground?', options: ['Root', 'Flower', 'Leaf', 'Fruit'], answer: 0, explain: 'Roots hold the plant in the ground.' },
 
   // Sapling (Grades 5–6): flowers, pollination, seeds and spores, reproduction

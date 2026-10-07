@@ -12,7 +12,7 @@ import { Confetti } from '@/components/Confetti';
 import { ProgressBar } from '@/components/ProgressBar';
 import { SoundToggle } from '@/components/SoundToggle';
 import { SpeakButton } from '@/components/SpeakButton';
-import { getPlant, type PartKey } from '@/data/plants';
+import { getPlant, plantsInWorld, WORLDS, type PartKey } from '@/data/plants';
 import { levelQuiz, plantQuiz, type Level, type Question } from '@/data/questions';
 import type { AnswerRecord } from '@/db/queries';
 import { feedback } from '@/lib/feedback';
@@ -34,7 +34,7 @@ function answerLabel(q: Question): string {
   return getPlant(q.plantId)?.parts.find((p) => p.key === q.answer)?.name ?? '';
 }
 
-/** Runs a quiz. `?plant=sunflower` plays that plant's quiz; `?level=sprout` plays a level quiz. */
+/** Runs a quiz. `?plant=gumamela` plays that plant's quiz; `?level=sprout` plays a level quiz. */
 export default function Play() {
   const params = useLocalSearchParams<{ plant?: string; level?: Level }>();
   const router = useRouter();
@@ -115,6 +115,7 @@ export default function Play() {
         after={snapshot.leaves}
         name={displayName(snapshot.profile)}
         unlocked={Boolean(plantId && !wasCompleted && snapshot.progress[plantId]?.completed)}
+        worldDone={plantId && !wasCompleted ? finishedWorld(plantId, snapshot.progress) : null}
         failedPlant={Boolean(plantId && !snapshot.progress[plantId]?.completed)}
         onAgain={() => router.replace({ pathname: '/play', params: plantId ? { plant: plantId } : { level: level! } })}
         onDone={() => goBack(router, exitTo)}
@@ -133,7 +134,11 @@ export default function Play() {
     <View className="flex-1 bg-cream">
       <SafeAreaView edges={['top']} className="flex-1">
         <View className="flex-row items-center gap-3 px-5 pt-2">
-          <Pressable accessibilityRole="button" accessibilityLabel="Quit quiz" hitSlop={10} onPress={() => goBack(router, exitTo)}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Quit quiz"
+            hitSlop={10}
+            onPress={() => goBack(router, exitTo)}>
             <X size={30} color={colors.faint} strokeWidth={3} />
           </Pressable>
           <View className="flex-1">
@@ -150,9 +155,14 @@ export default function Play() {
           <Text className="mt-4 font-semibold text-[14px] text-muted">
             Question {index + 1} of {questions.length}
           </Text>
-          <Animated.View key={q.id} entering={FadeIn.duration(250)} style={{ marginTop: 8, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+          <Animated.View
+            key={q.id}
+            entering={FadeIn.duration(250)}
+            style={{ marginTop: 8, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
             <Binhi stage={stageFor(snapshot.leaves).stage} mood={mood} size={70} hopKey={hop} />
-            <View className="mb-2 flex-1 flex-row items-center gap-2 rounded-3xl bg-white px-4 py-3" style={{ borderWidth: 2.5, borderColor: colors.sandDark }}>
+            <View
+              className="mb-2 flex-1 flex-row items-center gap-2 rounded-3xl bg-white px-4 py-3"
+              style={{ borderWidth: 2.5, borderColor: colors.sandDark }}>
               <Text className="flex-1 font-heading text-[20px] leading-[26px] text-ink">{q.prompt}</Text>
               <SpeakButton id={`q-${q.id}`} text={q.prompt} size={36} />
             </View>
@@ -167,7 +177,9 @@ export default function Play() {
                     state={stateFor(String(i), picked, checked, correctAnswer(q))}
                     onPress={() => pick(String(i))}
                     accessibilityLabel={opt}>
-                    <View className="h-9 w-9 items-center justify-center rounded-xl" style={{ backgroundColor: LETTER_COLORS[i] }}>
+                    <View
+                      className="h-9 w-9 items-center justify-center rounded-xl"
+                      style={{ backgroundColor: LETTER_COLORS[i] }}>
                       <Text className="font-heading text-[18px] text-white">{'ABCD'[i]}</Text>
                     </View>
                     <Text className="flex-1 font-semibold text-[19px] text-ink">{opt}</Text>
@@ -280,7 +292,11 @@ function AnswerCard({
 }) {
   const c = CARD[state];
   return (
-    <Pressable accessibilityRole="radio" accessibilityState={{ selected: state === 'picked' }} accessibilityLabel={accessibilityLabel} onPress={onPress}>
+    <Pressable
+      accessibilityRole="radio"
+      accessibilityState={{ selected: state === 'picked' }}
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}>
       {({ pressed }) => (
         <View
           style={{
@@ -322,15 +338,38 @@ function TapQuestion({
   const show = checked ? answer : picked;
   const pickedName = plant.parts.find((p) => p.key === picked)?.name;
   return (
-    <View className="items-center rounded-3xl bg-white pt-2" style={{ borderWidth: 2.5, borderColor: checked ? (picked === answer ? colors.leaf : colors.coralLight) : colors.sandDark, borderBottomWidth: 6 }}>
-      <PlantArt plantId={plantId} size={230} highlight={show} dimOthers={checked} onPartPress={checked ? undefined : (k) => onPick(k)} />
-      <View className="absolute left-3 top-3 rounded-full px-3 py-1" style={{ backgroundColor: pickedName ? colors.skyDark : colors.sand }}>
+    <View
+      className="items-center rounded-3xl bg-white pt-2"
+      style={{
+        borderWidth: 2.5,
+        borderColor: checked ? (picked === answer ? colors.leaf : colors.coralLight) : colors.sandDark,
+        borderBottomWidth: 6,
+      }}>
+      <PlantArt
+        plantId={plantId}
+        size={230}
+        highlight={show}
+        dimOthers={checked}
+        onPartPress={checked ? undefined : (k) => onPick(k)}
+      />
+      <View
+        className="absolute left-3 top-3 rounded-full px-3 py-1"
+        style={{ backgroundColor: pickedName ? colors.skyDark : colors.sand }}>
         <Text className="font-heading text-[15px]" style={{ color: pickedName ? colors.white : colors.muted }}>
           {pickedName ? `You picked: ${pickedName}` : 'Tap a part'}
         </Text>
       </View>
     </View>
   );
+}
+
+/** If finishing `plantId` completed its whole world, name that world and the one it opens. */
+function finishedWorld(plantId: string, progress: Record<string, { completed: boolean }>) {
+  const plant = getPlant(plantId);
+  if (!plant || !progress[plantId]?.completed) return null;
+  if (!plantsInWorld(plant.world).every((p) => progress[p.id]?.completed)) return null;
+  const index = WORLDS.findIndex((w) => w.id === plant.world);
+  return { world: WORLDS[index].name, next: WORLDS.slice(index + 1).find((w) => plantsInWorld(w.id).length)?.name };
 }
 
 function Results({
@@ -341,6 +380,7 @@ function Results({
   after,
   name,
   unlocked,
+  worldDone,
   failedPlant,
   onAgain,
   onDone,
@@ -352,30 +392,35 @@ function Results({
   after: number;
   name: string;
   unlocked: boolean;
+  /** Set when this quiz finished the last plant of a world. */
+  worldDone: { world: string; next?: string } | null;
   failedPlant: boolean;
   onAgain: () => void;
   onDone: () => void;
 }) {
   const grewUp = stageFor(after).stage !== stageFor(before).stage;
+  const celebrate = grewUp || Boolean(worldDone);
   const perfect = score === total;
   const title = perfect ? 'Perfect score!' : score / total >= 0.6 ? `Great job, ${name}!` : `Nice try, ${name}!`;
   const growth = stageFor(after);
-  const line = grewUp
-    ? `Wow! Binhi grew into ${growth.name}!`
-    : unlocked
-      ? 'You unlocked the next plant on your adventure!'
-      : failedPlant
-        ? 'Get 2 right to unlock the next plant. You can do it!'
-        : 'Keep learning to help Binhi grow!';
+  const line = worldDone
+    ? `You finished the ${worldDone.world} world!${worldDone.next ? ` ${worldDone.next} is now open!` : ' You explored every plant!'}`
+    : grewUp
+      ? `Wow! Binhi grew into ${growth.name}!`
+      : unlocked
+        ? 'You unlocked the next plant on your adventure!'
+        : failedPlant
+          ? 'Get 2 right to unlock the next plant. You can do it!'
+          : 'Keep learning to help Binhi grow!';
 
   useEffect(() => {
-    if (grewUp) feedback.levelUp();
+    if (celebrate) feedback.levelUp();
     else feedback.reward();
     autoSpeak('results', `${title} You got ${score} out of ${total}. You earned ${earned} leaves. ${line}`);
-  }, [grewUp, title, score, total, earned, line]);
+  }, [celebrate, title, score, total, earned, line]);
 
   return (
-    <View className="flex-1" style={{ backgroundColor: grewUp ? colors.sunPale : colors.leafPale }}>
+    <View className="flex-1" style={{ backgroundColor: celebrate ? colors.sunPale : colors.leafPale }}>
       <SafeAreaView edges={['top', 'bottom']} className="flex-1 justify-between px-6 pb-4">
         <View className="items-center pt-10">
           <Animated.View entering={ZoomIn.springify().damping(10)}>
@@ -385,13 +430,17 @@ function Results({
           <Text className="mt-1 text-center font-medium text-[18px] text-muted">{line}</Text>
 
           <View className="mt-8 flex-row gap-3 self-stretch">
-            <View className="flex-1 items-center rounded-3xl bg-white py-4" style={{ borderBottomWidth: 6, borderBottomColor: colors.sandDark }}>
+            <View
+              className="flex-1 items-center rounded-3xl bg-white py-4"
+              style={{ borderBottomWidth: 6, borderBottomColor: colors.sandDark }}>
               <Text className="font-semibold text-[14px] text-muted">SCORE</Text>
               <Text className="font-heading text-[38px] text-ink">
                 {score}/{total}
               </Text>
             </View>
-            <View className="flex-1 items-center rounded-3xl py-4" style={{ backgroundColor: colors.leaf, borderBottomWidth: 6, borderBottomColor: colors.leafDark }}>
+            <View
+              className="flex-1 items-center rounded-3xl py-4"
+              style={{ backgroundColor: colors.leaf, borderBottomWidth: 6, borderBottomColor: colors.leafDark }}>
               <Text className="font-semibold text-[14px] text-white">LEAVES</Text>
               <View className="flex-row items-center gap-1">
                 <Leaf size={28} color={colors.white} strokeWidth={2.6} />

@@ -152,7 +152,17 @@ The student's grade picks the starting level. They can choose to try the other l
 
 ## 6. Content
 
-Plants: Sunflower, Fern, Cactus, Rose, Mango, Sampaguita.
+15 plants commonly found in the Philippines, in 3 worlds (finish a world to open the next):
+
+| World 1: Bakuran (backyard) | World 2: Bukid (farm) | World 3: Kalikasan (nature) |
+|---|---|---|
+| Sampaguita ✅ | Palay | Narra |
+| Gumamela ✅ | Mango ✅ | Kawayan |
+| Makahiya ✅ | Saba | Pako |
+| Kalamansi ✅ | Mongo | Bakawan |
+| Malunggay ✅ | Niyog | Kangkong |
+
+✅ = built. Mango and Sampaguita are kept from the original mockup as Philippine symbols.
 
 Each plant has:
 - `id`, `name`, `scientificName`, `color` (theme color), `shortDescription`

@@ -20,9 +20,9 @@ export default function Welcome() {
         <SkyScene height={300} />
         <SafeAreaView edges={['top']} className="flex-1 items-center justify-end pb-6">
           <View className="flex-row items-end">
-            <PlantArt plantId="sunflower" size={120} variant="compact" />
+            <PlantArt plantId="gumamela" size={120} variant="compact" />
             <Binhi stage="sapling" mood="cheer" size={110} />
-            <PlantArt plantId="cactus" size={100} variant="compact" />
+            <PlantArt plantId="kalamansi" size={100} variant="compact" />
           </View>
         </SafeAreaView>
       </View>
