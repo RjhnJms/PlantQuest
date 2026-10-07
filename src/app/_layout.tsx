@@ -9,10 +9,11 @@ import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { DATABASE_NAME, migrateDbIfNeeded } from '@/db/schema';
 import { setSoundEnabled } from '@/lib/feedback';
 import { GameProvider, useGame } from '@/lib/game';
@@ -43,20 +44,33 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ Fredoka_400Regular, Fredoka_500Medium, Fredoka_600SemiBold, Fredoka_700Bold });
-  if (!fontsLoaded && !fontError) return null;
+  const [appReady, setAppReady] = useState(false);
+  const [loadingDone, setLoadingDone] = useState(false);
+  const fontsReady = fontsLoaded || Boolean(fontError);
+  const markReady = useCallback(() => setAppReady(true), []);
+  const finishLoading = useCallback(() => setLoadingDone(true), []);
+
+  // Hand over from the phone's splash image to our own loading screen as soon as fonts are in.
+  useEffect(() => {
+    if (fontsReady) void SplashScreen.hideAsync();
+  }, [fontsReady]);
+
+  if (!fontsReady) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.cream }}>
+      {/* The app loads underneath while the loading screen's bar fills on top. */}
       <SQLiteProvider databaseName={DATABASE_NAME} onInit={migrateDbIfNeeded}>
         <GameProvider>
-          <RootNavigator />
+          <RootNavigator onReady={markReady} />
         </GameProvider>
       </SQLiteProvider>
+      {!loadingDone ? <LoadingScreen ready={appReady} onDone={finishLoading} /> : null}
     </GestureHandlerRootView>
   );
 }
 
-function RootNavigator() {
+function RootNavigator({ onReady }: { onReady: () => void }) {
   const { snapshot } = useGame();
   const { onboarded, speechRate, soundOn, voiceId, voiceStyle } = snapshot.profile;
 
@@ -81,9 +95,10 @@ function RootNavigator() {
     setAutoSpeech(soundOn);
   }, [soundOn]);
 
+  // Mounted only once the database and profile are loaded (GameProvider waits for them).
   useEffect(() => {
-    void SplashScreen.hideAsync();
-  }, []);
+    onReady();
+  }, [onReady]);
 
   return (
     <>
