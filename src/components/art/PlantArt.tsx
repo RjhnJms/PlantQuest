@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { Platform } from 'react-native';
+import { useRef, type ReactNode } from 'react';
+import { Pressable, View, type GestureResponderEvent } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 
 import type { PartKey } from '@/data/plants';
@@ -27,11 +27,8 @@ export function PlantArt({ plantId, size = 200, variant = 'full', highlight = nu
 
   const part = (key: PartKey, children: ReactNode) => {
     const active = highlight === key;
-    // react-native-svg's onPress becomes touch-responder props, which browsers reject; web uses a plain click.
-    const press = onPartPress ? () => onPartPress(key) : undefined;
-    const handler = Platform.OS === 'web' ? ({ onClick: press } as object) : { onPress: press };
     return (
-      <G key={key} {...handler} opacity={dimOthers && highlight && !active ? 0.3 : 1}>
+      <G key={key} opacity={dimOthers && highlight && !active ? 0.3 : 1}>
         {children}
       </G>
     );
@@ -39,8 +36,25 @@ export function PlantArt({ plantId, size = 200, variant = 'full', highlight = nu
 
   const Draw = DRAWINGS[plantId] ?? DRAWINGS.sunflower;
 
-  return (
-    <Svg width={size} height={height} viewBox={viewBox}>
+  // One tap target for the whole drawing; the part is found from where the finger landed. This works the same
+  // on Android and web, and the generous zones make thin parts (stems, roots) easy for small fingers.
+  const box = useRef<View>(null);
+  const onPress = (e: GestureResponderEvent) => {
+    if (!onPartPress) return;
+    // locationX isn't reliable on web, so use the tap's page position minus the drawing's page position.
+    const { pageX, pageY } = e.nativeEvent;
+    box.current?.measure((_x, _y, _w, _h, left, top) => {
+      const scale = 200 / size;
+      const x = (pageX - left) * scale;
+      const y = (pageY - top) * scale + (full ? 0 : 10);
+      const zones = (HIT_ZONES[plantId] ?? []).filter((z) => full || z.key !== 'root'); // compact view hides roots
+      const hit = zones.find((z) => x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h);
+      if (hit) onPartPress(hit.key);
+    });
+  };
+
+  const drawing = (
+    <Svg width={size} height={height} viewBox={viewBox} pointerEvents="none">
       {full ? (
         <G>
           <Rect x={0} y={172} width={200} height={68} fill="#E9D2AE" />
@@ -55,7 +69,66 @@ export function PlantArt({ plantId, size = 200, variant = 'full', highlight = nu
       {Draw({ part, highlight, full })}
     </Svg>
   );
+
+  if (!onPartPress) return drawing;
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel="Plant drawing. Tap a part to learn about it." onPress={onPress}>
+      <View ref={box} collapsable={false}>
+        {drawing}
+      </View>
+    </Pressable>
+  );
 }
+
+type Zone = { key: PartKey; x: number; y: number; w: number; h: number };
+
+/** Tap areas in drawing coordinates (200 x 240). Checked in order, so small parts come before the big ones around them. */
+const HIT_ZONES: Record<string, Zone[]> = {
+  sunflower: [
+    { key: 'flower', x: 50, y: 10, w: 100, h: 102 },
+    { key: 'stem', x: 86, y: 112, w: 28, h: 64 },
+    { key: 'leaf', x: 36, y: 96, w: 128, h: 66 },
+    { key: 'root', x: 50, y: 176, w: 100, h: 64 },
+  ],
+  fern: [
+    { key: 'spores', x: 36, y: 100, w: 40, h: 34 },
+    { key: 'stem', x: 82, y: 140, w: 36, h: 36 },
+    { key: 'leaf', x: 10, y: 26, w: 180, h: 126 },
+    { key: 'root', x: 50, y: 176, w: 100, h: 64 },
+  ],
+  cactus: [
+    { key: 'flower', x: 82, y: 30, w: 36, h: 34 },
+    { key: 'leaf', x: 48, y: 70, w: 36, h: 76 },
+    { key: 'leaf', x: 116, y: 62, w: 36, h: 66 },
+    { key: 'stem', x: 78, y: 62, w: 44, h: 114 },
+    { key: 'root', x: 10, y: 176, w: 180, h: 40 },
+  ],
+  rose: [
+    { key: 'flower', x: 66, y: 22, w: 68, h: 68 },
+    { key: 'stem', x: 88, y: 90, w: 24, h: 86 },
+    { key: 'leaf', x: 44, y: 96, w: 112, h: 60 },
+    { key: 'root', x: 56, y: 176, w: 90, h: 64 },
+  ],
+  mango: [
+    { key: 'fruit', x: 54, y: 80, w: 32, h: 34 },
+    { key: 'fruit', x: 118, y: 82, w: 32, h: 34 },
+    { key: 'fruit', x: 88, y: 92, w: 32, h: 32 },
+    { key: 'stem', x: 80, y: 112, w: 40, h: 64 },
+    { key: 'leaf', x: 14, y: 10, w: 172, h: 104 },
+    { key: 'root', x: 44, y: 176, w: 112, h: 64 },
+  ],
+  sampaguita: [
+    { key: 'flower', x: 62, y: 70, w: 28, h: 28 },
+    { key: 'flower', x: 110, y: 64, w: 28, h: 28 },
+    { key: 'flower', x: 86, y: 34, w: 28, h: 28 },
+    { key: 'flower', x: 40, y: 84, w: 28, h: 28 },
+    { key: 'flower', x: 134, y: 78, w: 28, h: 28 },
+    { key: 'flower', x: 96, y: 98, w: 28, h: 28 },
+    { key: 'stem', x: 86, y: 146, w: 30, h: 30 },
+    { key: 'leaf', x: 30, y: 50, w: 140, h: 100 },
+    { key: 'root', x: 60, y: 176, w: 80, h: 64 },
+  ],
+};
 
 type DrawArgs = {
   part: (key: PartKey, children: ReactNode) => ReactNode;

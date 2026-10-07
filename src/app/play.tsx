@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Leaf, X } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeIn, SlideInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Binhi, type BinhiMood } from '@/components/art/Binhi';
@@ -199,7 +199,7 @@ export default function Play() {
         {/* Feedback tray */}
         <Animated.View
           key={`${q.id}-${checked}`}
-          entering={checked ? SlideInDown.springify().damping(15) : undefined}
+          entering={checked ? FadeIn.duration(200) : undefined}
           style={{
             paddingHorizontal: 20,
             paddingTop: 16,
