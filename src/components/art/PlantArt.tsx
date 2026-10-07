@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Platform } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 
 import type { PartKey } from '@/data/plants';
@@ -26,11 +27,11 @@ export function PlantArt({ plantId, size = 200, variant = 'full', highlight = nu
 
   const part = (key: PartKey, children: ReactNode) => {
     const active = highlight === key;
+    // react-native-svg's onPress becomes touch-responder props, which browsers reject; web uses a plain click.
+    const press = onPartPress ? () => onPartPress(key) : undefined;
+    const handler = Platform.OS === 'web' ? ({ onClick: press } as object) : { onPress: press };
     return (
-      <G
-        key={key}
-        onPress={onPartPress ? () => onPartPress(key) : undefined}
-        opacity={dimOthers && highlight && !active ? 0.3 : 1}>
+      <G key={key} {...handler} opacity={dimOthers && highlight && !active ? 0.3 : 1}>
         {children}
       </G>
     );

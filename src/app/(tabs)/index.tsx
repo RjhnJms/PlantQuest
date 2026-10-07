@@ -107,7 +107,7 @@ export default function Home() {
           </Text>
         </View>
 
-        <View className="mt-4 self-center" style={{ width: pathWidth, height: (PLANTS.length - 1) * ROW + STOP + 40 }}>
+        <View className="mt-12 self-center" style={{ width: pathWidth, height: (PLANTS.length - 1) * ROW + STOP + 40 }}>
           <Svg width={pathWidth} height={(PLANTS.length - 1) * ROW + STOP} style={{ position: 'absolute' }}>
             <Path d={pathD} stroke={colors.sandDark} strokeWidth={14} strokeLinecap="round" strokeDasharray="1 24" fill="none" />
           </Svg>

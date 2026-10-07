@@ -2,6 +2,8 @@ const { colors } = require('./src/lib/palette');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // PlantQuest is light-only; 'class' stops NativeWind on web from fighting the browser's dark mode setting.
+  darkMode: 'class',
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {

@@ -145,7 +145,7 @@ export default function Play() {
           <Text className="mt-4 font-semibold text-[14px] text-muted">
             Question {index + 1} of {questions.length}
           </Text>
-          <Animated.View key={q.id} entering={FadeIn.duration(250)} className="mt-2 flex-row items-end gap-2">
+          <Animated.View key={q.id} entering={FadeIn.duration(250)} style={{ marginTop: 8, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
             <Binhi stage={stageFor(snapshot.leaves).stage} mood={mood} size={70} hopKey={hop} />
             <View className="mb-2 flex-1 flex-row items-center gap-2 rounded-3xl bg-white px-4 py-3" style={{ borderWidth: 2.5, borderColor: colors.sandDark }}>
               <Text className="flex-1 font-heading text-[20px] leading-[26px] text-ink">{q.prompt}</Text>
@@ -200,8 +200,10 @@ export default function Play() {
         <Animated.View
           key={`${q.id}-${checked}`}
           entering={checked ? SlideInDown.springify().damping(15) : undefined}
-          className="px-5 pb-3 pt-4"
           style={{
+            paddingHorizontal: 20,
+            paddingTop: 16,
+            paddingBottom: 12,
             backgroundColor: !checked ? colors.white : isCorrect ? colors.leafPale : colors.coralPale,
             borderTopWidth: 2,
             borderTopColor: !checked ? colors.sand : isCorrect ? colors.leafLight : colors.coralLight,

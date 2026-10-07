@@ -114,12 +114,14 @@ export default function PlantDetails() {
           </View>
 
           {part ? (
-            <Animated.View key={part.key} entering={FadeInDown.springify().damping(14)} className="mx-5 mt-3 flex-row items-center gap-3 rounded-3xl p-4" style={{ backgroundColor: plant.theme.main }}>
-              <View className="flex-1">
-                <Text className="font-heading text-[20px] text-white">{part.name}</Text>
-                <Text className="font-medium text-[17px] leading-[24px] text-white">{part.text}</Text>
+            <Animated.View key={part.key} entering={FadeInDown.springify().damping(14)}>
+              <View className="mx-5 mt-3 flex-row items-center gap-3 rounded-3xl p-4" style={{ backgroundColor: plant.theme.main, borderBottomWidth: 5, borderBottomColor: plant.theme.dark }}>
+                <View className="flex-1">
+                  <Text className="font-heading text-[20px] text-white">{part.name}</Text>
+                  <Text className="font-medium text-[17px] leading-[24px] text-white">{part.text}</Text>
+                </View>
+                <SpeakButton id={`part-${plant.id}-${part.key}`} text={`${part.name}. ${part.text}`} size={38} />
               </View>
-              <SpeakButton id={`part-${plant.id}-${part.key}`} text={`${part.name}. ${part.text}`} size={38} />
             </Animated.View>
           ) : null}
 
@@ -149,12 +151,14 @@ export default function PlantDetails() {
       </SafeAreaView>
 
       {toast ? (
-        <Animated.View entering={ZoomIn.springify()} className="absolute left-5 right-5 top-24 flex-row items-center gap-2 rounded-2xl px-4 py-3" style={{ backgroundColor: colors.ink }}>
-          <Leaf size={20} color={colors.leafLight} />
-          <Text className="flex-1 font-semibold text-[16px] text-white">{toast}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => setToast(null)} hitSlop={10}>
-            <Text className="font-heading text-[16px] text-sun">OK</Text>
-          </Pressable>
+        <Animated.View entering={ZoomIn.springify()} style={{ position: 'absolute', left: 20, right: 20, top: 96 }}>
+          <View className="flex-row items-center gap-2 rounded-2xl px-4 py-3" style={{ backgroundColor: colors.ink }}>
+            <Leaf size={20} color={colors.leafLight} />
+            <Text className="flex-1 font-semibold text-[16px] text-white">{toast}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => setToast(null)} hitSlop={10}>
+              <Text className="font-heading text-[16px] text-sun">OK</Text>
+            </Pressable>
+          </View>
         </Animated.View>
       ) : null}
       <Confetti playKey={party} />
