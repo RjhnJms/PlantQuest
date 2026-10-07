@@ -57,6 +57,9 @@ export default function Play() {
   const [party, setParty] = useState(0);
   const [hint, setHint] = useState('');
   const [result, setResult] = useState<{ earned: number; saved: boolean } | null>(null);
+  // CHECK and CONTINUE share one button. Quick double taps can fire twice before the screen re-renders
+  // (recording an answer twice, skipping a question, or saving twice), so each step accepts one tap only.
+  const step = useRef({ checked: false, finishing: false, leaving: false });
 
   const q = questions[index];
   const isCorrect = checked && picked === correctAnswer(q);
@@ -69,12 +72,14 @@ export default function Play() {
   useEffect(() => () => stopSpeaking(), []);
 
   const check = () => {
+    if (step.current.checked) return;
     if (!picked) {
       setHint('Pick an answer first!');
       feedback.tryAgain();
       return;
     }
     const correct = picked === correctAnswer(q);
+    step.current.checked = true;
     setChecked(true);
     setAnswers((a) => [...a, { questionId: q.id, chosen: picked, correct }]);
     if (correct) {
@@ -90,13 +95,16 @@ export default function Play() {
   };
 
   const next = async () => {
+    if (!step.current.checked || step.current.finishing) return;
     if (index + 1 < questions.length) {
-      setIndex((i) => i + 1);
+      step.current.checked = false;
+      setIndex((i) => Math.min(i + 1, questions.length - 1));
       setPicked(null);
       setChecked(false);
       setHint('');
       return;
     }
+    step.current.finishing = true;
     const score = answers.filter((a) => a.correct).length;
     const passed = plantId ? score >= 2 : true;
     try {
@@ -128,7 +136,11 @@ export default function Play() {
         failedPlant={Boolean(plantId && !snapshot.progress[plantId]?.completed)}
         saveFailed={!result.saved}
         nextPlant={nextPlant?.name}
-        onNext={() => nextPlant && router.replace({ pathname: '/plant/[id]', params: { id: nextPlant.id } })}
+        onNext={() => {
+          if (!nextPlant || step.current.leaving) return;
+          step.current.leaving = true;
+          router.replace({ pathname: '/plant/[id]', params: { id: nextPlant.id } });
+        }}
         onAgain={() => router.replace({ pathname: '/play', params: plantId ? { plant: plantId } : { level: level! } })}
         onDone={() => goBack(router, exitTo)}
       />

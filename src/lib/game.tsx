@@ -58,6 +58,15 @@ type GameContextValue = {
 
 const GameContext = createContext<GameContextValue | null>(null);
 
+// One app-wide queue: saves run one at a time, so two can never overlap (e.g. a quick double tap saving a quiz twice).
+let saveQueue: Promise<unknown> = Promise.resolve();
+
+function enqueue<R>(task: () => Promise<R>): Promise<R> {
+  const job = saveQueue.then(task, task);
+  saveQueue = job.catch(() => undefined);
+  return job;
+}
+
 export function GameProvider({ children }: PropsWithChildren) {
   const db = useSQLiteContext();
   const [snapshot, setSnapshot] = useState<GameSnapshot | null>(null);
@@ -73,10 +82,13 @@ export function GameProvider({ children }: PropsWithChildren) {
     // Every action writes to SQLite first, then re-reads, so the screen always shows what is saved.
     const withReload =
       <A extends unknown[], R>(fn: (...args: A) => Promise<R>) =>
-      async (...args: A) => {
-        const result = await fn(...args);
-        await reload();
-        return result;
+      (...args: A): Promise<R> => {
+        const run = async () => {
+          const result = await fn(...args);
+          await reload();
+          return result;
+        };
+        return enqueue(run);
       };
     return {
       snapshot,
