@@ -1,13 +1,14 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Check, Lock } from 'lucide-react-native';
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
+import { useCallback, useState } from 'react';
+import { BackHandler, Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { Avatar } from '@/components/art/Avatar';
 import { Binhi } from '@/components/art/Binhi';
+import { canExitApp, ExitDialog } from '@/components/ExitDialog';
 import { PlantArt } from '@/components/art/PlantArt';
 import { SkyScene } from '@/components/art/SkyScene';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -34,6 +35,19 @@ export default function Home() {
   const growth = stageFor(snapshot.leaves);
   const [hop, setHop] = useState(0);
   const [talk, setTalk] = useState<string | null>(null);
+  const [askExit, setAskExit] = useState(false);
+
+  // Android back button on Home would close the app straight away; ask first instead.
+  useFocusEffect(
+    useCallback(() => {
+      if (!canExitApp) return;
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        setAskExit((open) => !open); // pressing back again while asking closes the question
+        return true;
+      });
+      return () => sub.remove();
+    }, []),
+  );
 
   const status = PLANTS.map((p) => plantStatus(snapshot, p.id));
   const done = status.filter((s) => s === 'done').length;
@@ -127,6 +141,7 @@ export default function Home() {
           ))}
         </View>
       </ScrollView>
+      <ExitDialog visible={askExit} onCancel={() => setAskExit(false)} />
     </View>
   );
 }

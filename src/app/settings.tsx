@@ -1,8 +1,9 @@
-import { BookOpen, Mic, RotateCcw, Volume2 } from 'lucide-react-native';
+import { BookOpen, DoorOpen, Mic, RotateCcw, Volume2 } from 'lucide-react-native';
 import { useState, type PropsWithChildren, type ReactNode } from 'react';
 import { Pressable, Switch, Text, View } from 'react-native';
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { canExitApp, ExitDialog } from '@/components/ExitDialog';
 import { Screen, ScreenTitle } from '@/components/Screen';
 import { SoundToggle } from '@/components/SoundToggle';
 import { VoicePicker } from '@/components/VoicePicker';
@@ -49,6 +50,7 @@ export default function Settings() {
   const { snapshot, updateProfile, startOver } = useGame();
   const { profile } = snapshot;
   const [askStartOver, setAskStartOver] = useState(false);
+  const [askExit, setAskExit] = useState(false);
 
   return (
     <Screen edges={['top', 'bottom']}>
@@ -115,6 +117,23 @@ export default function Settings() {
           </Pressable>
         </Row>
       </Section>
+
+      {canExitApp ? (
+        <Section icon={<DoorOpen size={18} color={colors.white} />} bg={colors.ink} title="Exit">
+          <Row title="Exit PlantQuest" hint="Close the app. Your progress is saved.">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Exit PlantQuest"
+              onPress={() => setAskExit(true)}
+              className="rounded-2xl px-4 py-2.5"
+              style={{ backgroundColor: colors.sand, borderBottomWidth: 4, borderBottomColor: colors.sandDeep }}>
+              <Text className="font-heading text-[15px] text-ink">Exit</Text>
+            </Pressable>
+          </Row>
+        </Section>
+      ) : null}
+
+      <ExitDialog visible={askExit} onCancel={() => setAskExit(false)} />
 
       <ConfirmDialog
         visible={askStartOver}
