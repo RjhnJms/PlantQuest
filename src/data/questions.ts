@@ -54,6 +54,43 @@ export const QUESTIONS: Question[] = [
   { id: 'man-2', plantId: 'mango', level: 'sprout', kind: 'tap', prompt: 'Tap the trunk, the woody stem.', answer: 'stem', explain: 'A tree trunk is a hard, woody stem.' },
   { id: 'man-3', plantId: 'mango', level: 'sprout', kind: 'choice', prompt: 'How many seeds are inside a mango fruit?', options: ['None', 'One big seed', 'Hundreds', 'Ten'], answer: 1, explain: 'A mango has one big seed inside.' },
 
+  { id: 'pal-1', plantId: 'palay', level: 'sprout', kind: 'choice', prompt: 'Palay is a kind of…', options: ['Grass', 'Tree', 'Vine', 'Shrub'], answer: 0, explain: 'Palay is a grass, like bamboo.' },
+  { id: 'pal-2', plantId: 'palay', level: 'sprout', kind: 'tap', prompt: 'Tap the grains. They become our rice!', answer: 'fruit', explain: 'The grains are seeds that we cook as rice.' },
+  { id: 'pal-3', plantId: 'palay', level: 'sprout', kind: 'choice', prompt: 'Where does palay often grow?', options: ['In wet, muddy fields', 'On snowy mountains', 'In the desert', 'Inside caves'], answer: 0, explain: 'Palay grows in wet, muddy rice fields.' },
+
+  { id: 'sab-1', plantId: 'saba', level: 'sprout', kind: 'choice', prompt: 'A banana plant is a giant…', options: ['Herb', 'Tree', 'Vine', 'Grass'], answer: 0, explain: 'A banana plant is a giant herb. Its trunk is made of leaves.' },
+  { id: 'sab-2', plantId: 'saba', level: 'sprout', kind: 'tap', prompt: 'Tap the bunch of bananas.', answer: 'fruit', explain: 'Bananas grow together in a big bunch.' },
+  { id: 'sab-3', plantId: 'saba', level: 'sprout', kind: 'choice', prompt: 'Which snack is made from saba?', options: ['Banana cue', 'Popcorn', 'Pandesal', 'Fried chicken'], answer: 0, explain: 'Banana cue is made from saba.' },
+
+  { id: 'mon-1', plantId: 'mongo', level: 'sprout', kind: 'choice', prompt: 'What do mongo seeds need to sprout?', options: ['Water, air and warmth', 'Salt', 'Candy', 'Ice'], answer: 0, explain: 'Seeds need water, air and warmth to sprout.' },
+  { id: 'mon-2', plantId: 'mongo', level: 'sprout', kind: 'tap', prompt: 'Tap a pod. It holds the beans.', answer: 'fruit', explain: 'The pods hold the mongo beans.' },
+  { id: 'mon-3', plantId: 'mongo', level: 'sprout', kind: 'choice', prompt: 'When a seed sprouts, which part comes out first?', options: ['Root', 'Flower', 'Fruit', 'Pod'], answer: 0, explain: 'The root comes out first to drink water.' },
+
+  { id: 'niy-1', plantId: 'niyog', level: 'sprout', kind: 'choice', prompt: 'Why is the coconut called the tree of life?', options: ['People use every part', 'It lives forever', 'It can talk', 'It has no leaves'], answer: 0, explain: 'People use every part of the coconut palm.' },
+  { id: 'niy-2', plantId: 'niyog', level: 'sprout', kind: 'tap', prompt: 'Tap a coconut.', answer: 'fruit', explain: 'Coconuts grow at the top, under the fronds.' },
+  { id: 'niy-3', plantId: 'niyog', level: 'sprout', kind: 'choice', prompt: 'Coconuts can travel far by…', options: ['Floating on the sea', 'Flying', 'Rolling uphill', 'Walking'], answer: 0, explain: 'Coconuts float on the sea to faraway beaches.' },
+
+  // World 3: Kalikasan
+  { id: 'nar-1', plantId: 'narra', level: 'sprout', kind: 'choice', prompt: 'Narra is the national ___ of the Philippines.', options: ['Tree', 'Flower', 'Fruit', 'Leaf'], answer: 0, explain: 'Narra is the national tree of the Philippines.' },
+  { id: 'nar-2', plantId: 'narra', level: 'sprout', kind: 'tap', prompt: 'Tap a round seed pod.', answer: 'fruit', explain: 'The round pods carry narra seeds.' },
+  { id: 'nar-3', plantId: 'narra', level: 'sprout', kind: 'choice', prompt: 'How do narra seeds travel far?', options: ['The wind spins them', 'Fish carry them', 'They walk', 'They roll uphill'], answer: 0, explain: 'The winged pods spin away on the wind.' },
+
+  { id: 'kaw-1', plantId: 'kawayan', level: 'sprout', kind: 'choice', prompt: 'Bamboo is a giant…', options: ['Grass', 'Tree', 'Flower', 'Vine'], answer: 0, explain: 'Bamboo is a giant grass.' },
+  { id: 'kaw-2', plantId: 'kawayan', level: 'sprout', kind: 'tap', prompt: 'Tap the young shoot, the labong.', answer: 'shoot', explain: 'The young shoot is called labong.' },
+  { id: 'kaw-3', plantId: 'kawayan', level: 'sprout', kind: 'choice', prompt: 'What is inside a bamboo stem?', options: ['It is hollow', 'Rocks', 'Seeds', 'Sand'], answer: 0, explain: 'A bamboo stem is hollow inside.' },
+
+  { id: 'pak-1', plantId: 'pako', level: 'sprout', kind: 'choice', prompt: 'Where does pako like to grow?', options: ['Wet, shady places', 'Hot deserts', 'On snow', 'In the sea'], answer: 0, explain: 'Pako likes wet, shady places.' },
+  { id: 'pak-2', plantId: 'pako', level: 'sprout', kind: 'tap', prompt: 'Tap the spores under the frond.', answer: 'spores', explain: 'The tiny dots under the frond hold spores.' },
+  { id: 'pak-3', plantId: 'pako', level: 'sprout', kind: 'choice', prompt: 'New ferns grow from tiny…', options: ['Spores', 'Seeds', 'Fruits', 'Flowers'], answer: 0, explain: 'Ferns have no seeds. They grow from spores.' },
+
+  { id: 'bak-1', plantId: 'bakawan', level: 'sprout', kind: 'choice', prompt: 'Where does bakawan grow?', options: ['In salty water by the coast', 'In the desert', 'On snowy mountains', 'Inside houses'], answer: 0, explain: 'Bakawan grows in salty water along the coast.' },
+  { id: 'bak-2', plantId: 'bakawan', level: 'sprout', kind: 'tap', prompt: 'Tap the stilt roots.', answer: 'root', explain: 'Stilt roots hold the mangrove up above the water.' },
+  { id: 'bak-3', plantId: 'bakawan', level: 'sprout', kind: 'choice', prompt: 'How do mangroves help people?', options: ['They block big waves', 'They make snow', 'They make noise', 'They eat fish'], answer: 0, explain: 'Mangroves protect villages from big waves.' },
+
+  { id: 'kan-1', plantId: 'kangkong', level: 'sprout', kind: 'choice', prompt: 'Why can kangkong float?', options: ['Its stems are hollow', 'It has wings', 'It is made of plastic', 'It is very heavy'], answer: 0, explain: 'Hollow stems full of air help kangkong float.' },
+  { id: 'kan-2', plantId: 'kangkong', level: 'sprout', kind: 'tap', prompt: 'Tap the hollow stem that floats.', answer: 'stem', explain: 'The hollow stem floats on the water.' },
+  { id: 'kan-3', plantId: 'kangkong', level: 'sprout', kind: 'picture', prompt: 'Which plant grows in water?', options: ['kangkong', 'narra', 'kalamansi', 'niyog'], answer: 0, explain: 'Kangkong grows in water and wet places.' },
+
   // Sprout (Grades 1–4): parts, needs, kinds of plants
   { id: 'sp-1', level: 'sprout', kind: 'choice', prompt: 'Which part of the plant takes in water and minerals from the soil?', options: ['Leaf', 'Stem', 'Root', 'Flower'], answer: 2, explain: 'Roots take in water and minerals from the soil.' },
   { id: 'sp-2', level: 'sprout', kind: 'choice', prompt: 'Which part of the plant makes food using sunlight?', options: ['Root', 'Leaf', 'Seed', 'Thorn'], answer: 1, explain: 'Leaves use sunlight to make food.' },

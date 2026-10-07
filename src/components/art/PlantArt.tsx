@@ -47,7 +47,7 @@ export function PlantArt({ plantId, size = 200, variant = 'full', highlight = nu
       const scale = 200 / size;
       const x = (pageX - left) * scale;
       const y = (pageY - top) * scale + (full ? 0 : 10);
-      const zones = (HIT_ZONES[plantId] ?? []).filter((z) => full || z.key !== 'root'); // compact view hides roots
+      const zones = HIT_ZONES[plantId] ?? [];
       const hit = zones.find((z) => x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h);
       if (hit) onPartPress(hit.key);
     });
@@ -123,6 +123,68 @@ const HIT_ZONES: Record<string, Zone[]> = {
     { key: 'stem', x: 82, y: 140, w: 36, h: 36 },
     { key: 'leaf', x: 10, y: 26, w: 180, h: 126 },
     { key: 'root', x: 50, y: 176, w: 100, h: 64 },
+  ],
+  palay: [
+    { key: 'fruit', x: 58, y: 54, w: 36, h: 46 },
+    { key: 'fruit', x: 100, y: 46, w: 30, h: 46 },
+    { key: 'fruit', x: 118, y: 62, w: 26, h: 34 },
+    { key: 'stem', x: 84, y: 100, w: 32, h: 76 },
+    { key: 'leaf', x: 6, y: 60, w: 188, h: 116 },
+    { key: 'root', x: 50, y: 176, w: 100, h: 64 },
+  ],
+  saba: [
+    { key: 'fruit', x: 102, y: 84, w: 40, h: 74 },
+    { key: 'stem', x: 86, y: 76, w: 28, h: 100 },
+    { key: 'leaf', x: 2, y: 2, w: 196, h: 86 },
+    { key: 'root', x: 50, y: 176, w: 100, h: 64 },
+  ],
+  mongo: [
+    { key: 'fruit', x: 62, y: 130, w: 20, h: 42 },
+    { key: 'fruit', x: 124, y: 114, w: 20, h: 42 },
+    { key: 'fruit', x: 82, y: 94, w: 20, h: 32 },
+    { key: 'leaf', x: 46, y: 66, w: 112, h: 98 },
+    { key: 'stem', x: 88, y: 84, w: 24, h: 92 },
+    { key: 'root', x: 60, y: 176, w: 80, h: 64 },
+  ],
+  niyog: [
+    { key: 'fruit', x: 94, y: 46, w: 38, h: 34 },
+    { key: 'leaf', x: 10, y: 2, w: 184, h: 86 },
+    { key: 'stem', x: 84, y: 80, w: 36, h: 96 },
+    { key: 'root', x: 40, y: 176, w: 120, h: 50 },
+  ],
+  narra: [
+    { key: 'fruit', x: 44, y: 70, w: 28, h: 28 },
+    { key: 'fruit', x: 128, y: 66, w: 28, h: 28 },
+    { key: 'fruit', x: 82, y: 78, w: 28, h: 28 },
+    { key: 'fruit', x: 108, y: 14, w: 28, h: 28 },
+    { key: 'root', x: 60, y: 148, w: 80, h: 28 },
+    { key: 'stem', x: 84, y: 98, w: 32, h: 50 },
+    { key: 'leaf', x: 6, y: 6, w: 188, h: 104 },
+    { key: 'root', x: 40, y: 176, w: 120, h: 60 },
+  ],
+  kawayan: [
+    { key: 'shoot', x: 136, y: 134, w: 34, h: 44 },
+    { key: 'stem', x: 66, y: 60, w: 20, h: 118 },
+    { key: 'stem', x: 88, y: 60, w: 20, h: 118 },
+    { key: 'stem', x: 110, y: 60, w: 20, h: 118 },
+    { key: 'leaf', x: 8, y: 4, w: 184, h: 108 },
+    { key: 'root', x: 20, y: 178, w: 160, h: 46 },
+  ],
+  bakawan: [
+    { key: 'fruit', x: 60, y: 70, w: 16, h: 46 },
+    { key: 'fruit', x: 126, y: 68, w: 16, h: 50 },
+    { key: 'fruit', x: 78, y: 76, w: 14, h: 36 },
+    { key: 'fruit', x: 110, y: 78, w: 14, h: 32 },
+    { key: 'stem', x: 88, y: 64, w: 24, h: 50 },
+    { key: 'leaf', x: 14, y: 8, w: 172, h: 64 },
+    { key: 'root', x: 18, y: 110, w: 164, h: 76 },
+  ],
+  kangkong: [
+    { key: 'flower', x: 52, y: 36, w: 36, h: 34 },
+    { key: 'flower', x: 112, y: 32, w: 36, h: 34 },
+    { key: 'stem', x: 0, y: 116, w: 200, h: 20 },
+    { key: 'leaf', x: 8, y: 62, w: 184, h: 54 },
+    { key: 'root', x: 20, y: 136, w: 160, h: 44 },
   ],
   mango: [
     { key: 'fruit', x: 54, y: 80, w: 32, h: 34 },
@@ -506,6 +568,537 @@ const DRAWINGS: Record<string, (a: DrawArgs) => ReactNode> = {
             {[[46, 113], [56, 118], [66, 124], [52, 108], [62, 112]].map(([x, y], i) => (
               <Circle key={i} cx={x} cy={y + 4} r={2.6} fill="#C46A1A" stroke={OUTLINE} strokeWidth={0.6} />
             ))}
+          </G>,
+        )}
+      </G>
+    );
+  },
+
+  palay: ({ part, highlight, full }) => {
+    const panicles: [number, number][][] = [
+      [[84, 62], [80, 67], [76, 73], [73, 79], [70, 85], [68, 92]],
+      [[106, 54], [111, 58], [115, 63], [118, 69], [120, 76], [121, 83]],
+      [[122, 68], [126, 72], [130, 77], [133, 83], [136, 89]],
+    ];
+    return (
+      <G>
+        {full &&
+          part(
+            'root',
+            <G>
+              <Glow show={highlight === 'root'}>
+                <Ellipse cx={100} cy={200} rx={46} ry={26} fill={colors.sun} />
+              </Glow>
+              {roots(ROOT, ['M100 176 q-4 24 -2 46', 'M100 176 q-20 14 -34 30', 'M100 176 q20 14 34 28', 'M96 178 q-10 18 -20 36', 'M104 178 q10 18 20 36', 'M100 176 q-30 6 -44 14', 'M100 176 q30 6 44 12'], 2)}
+            </G>,
+          )}
+        {part(
+          'leaf',
+          <G>
+            <Glow show={highlight === 'leaf'}>
+              <Ellipse cx={100} cy={128} rx={90} ry={52} fill={colors.sun} />
+            </Glow>
+            {['M100 174 q-24 -40 -78 -62', 'M100 174 q-10 -50 -48 -98', 'M100 174 q22 -44 76 -64', 'M100 174 q12 -54 50 -94', 'M100 174 q-40 -20 -88 -12', 'M100 174 q40 -20 90 -14'].map((d, i) => (
+              <Path key={i} d={d} stroke={i % 2 ? colors.leafDark : colors.leaf} strokeWidth={6} strokeLinecap="round" fill="none" />
+            ))}
+          </G>,
+        )}
+        {part(
+          'stem',
+          <G>
+            <Glow show={highlight === 'stem'}>
+              <Rect x={80} y={52} width={44} height={124} rx={14} fill={colors.sun} />
+            </Glow>
+            <Path d="M100 176 q-6 -60 -16 -114 M100 176 q2 -64 6 -122 M100 176 q8 -56 22 -108" stroke="#9CCB5A" strokeWidth={3.5} strokeLinecap="round" fill="none" />
+          </G>,
+        )}
+        {part(
+          'fruit',
+          <G>
+            <Glow show={highlight === 'fruit'}>
+              <Ellipse cx={76} cy={78} rx={16} ry={22} fill={colors.sun} />
+              <Ellipse cx={115} cy={68} rx={14} ry={22} fill={colors.sun} />
+              <Ellipse cx={130} cy={78} rx={13} ry={18} fill={colors.sun} />
+            </Glow>
+            {panicles.map((pts, k) => (
+              <G key={k}>
+                <Path d={`M${pts.map(([x, y]) => `${x} ${y}`).join(' L')}`} stroke="#C9A23A" strokeWidth={1.5} fill="none" />
+                {pts.map(([x, y], i) => (
+                  <Ellipse key={i} cx={x + (i % 2 ? 3 : -3)} cy={y} rx={2.8} ry={4.6} fill="#E8C35A" stroke={OUTLINE} strokeWidth={0.7} />
+                ))}
+              </G>
+            ))}
+          </G>,
+        )}
+      </G>
+    );
+  },
+
+  saba: ({ part, highlight, full }) => (
+    <G>
+      {full &&
+        part(
+          'root',
+          <G>
+            <Glow show={highlight === 'root'}>
+              <Ellipse cx={100} cy={200} rx={48} ry={26} fill={colors.sun} />
+            </Glow>
+            {roots(ROOT, ['M100 176 q-2 22 0 40', 'M96 178 q-20 10 -40 22', 'M104 178 q20 10 40 22', 'M98 180 q-10 18 -22 34', 'M102 180 q10 18 22 34'], 3)}
+          </G>,
+        )}
+      {part(
+        'stem',
+        <G>
+          <Glow show={highlight === 'stem'}>
+            <Rect x={82} y={70} width={36} height={108} rx={14} fill={colors.sun} />
+          </Glow>
+          <Path d="M90 176 q2 -50 4 -100 h12 q2 50 4 100z" fill="#8DB255" stroke={OUTLINE} strokeWidth={1.5} />
+          <Path d="M96 172 q1 -40 2 -90 M104 172 q-1 -40 0 -90" stroke="#6E8B3D" strokeWidth={1.4} fill="none" />
+          <Ellipse cx={95} cy={140} rx={3} ry={6} fill="#7A5A3A" opacity={0.45} />
+          <Ellipse cx={105} cy={112} rx={3} ry={5} fill="#7A5A3A" opacity={0.45} />
+        </G>,
+      )}
+      {part(
+        'leaf',
+        <G>
+          <Glow show={highlight === 'leaf'}>
+            <Ellipse cx={100} cy={46} rx={96} ry={44} fill={colors.sun} />
+          </Glow>
+          {[
+            [56, 72, -18], [146, 68, 20], [74, 44, -48], [128, 42, 46],
+          ].map(([x, y, r], i) => (
+            <G key={i} transform={`rotate(${r} ${x} ${y})`}>
+              <Ellipse cx={x} cy={y} rx={46} ry={14} fill={i % 2 ? colors.leaf : colors.leafLight} stroke={OUTLINE} strokeWidth={1.3} />
+              <Path d={`M${x - 44} ${y} h88`} stroke={colors.leafDark} strokeWidth={1.6} />
+              <Path d={`M${x - 20} ${y} l-4 12 M${x + 14} ${y} l4 -12`} stroke={colors.cream} strokeWidth={1.4} />
+            </G>
+          ))}
+        </G>,
+      )}
+      {part(
+        'fruit',
+        <G>
+          <Glow show={highlight === 'fruit'}>
+            <Ellipse cx={122} cy={118} rx={22} ry={40} fill={colors.sun} />
+          </Glow>
+          <Path d="M104 80 q14 6 16 22 v40" stroke="#6E8B3D" strokeWidth={3} fill="none" />
+          {[96, 106, 116, 126].map((y, row) =>
+            [-9, -3, 3, 9].map((dx, i) => (
+              <Path
+                key={`${row}-${i}`}
+                d={`M${120 + dx} ${y} q${dx > 0 ? 6 : -6} -4 ${dx > 0 ? 7 : -7} -12`}
+                stroke="#B7C94A"
+                strokeWidth={5}
+                strokeLinecap="round"
+                fill="none"
+              />
+            )),
+          )}
+          <Path d="M120 134 q-8 6 -6 16 q6 8 12 0 q2 -10 -6 -16z" fill="#7B3F6E" stroke={OUTLINE} strokeWidth={1.2} />
+        </G>,
+      )}
+    </G>
+  ),
+
+  mongo: ({ part, highlight, full }) => {
+    const trio = (x: number, y: number, k: number) => (
+      <G key={k}>
+        <Ellipse cx={x - 11} cy={y + 2} rx={12} ry={7} fill={colors.leaf} stroke={OUTLINE} strokeWidth={1} transform={`rotate(-25 ${x - 9} ${y + 2})`} />
+        <Ellipse cx={x + 11} cy={y + 2} rx={12} ry={7} fill={colors.leaf} stroke={OUTLINE} strokeWidth={1} transform={`rotate(25 ${x + 9} ${y + 2})`} />
+        <Ellipse cx={x} cy={y - 10} rx={7} ry={12} fill={colors.leafLight} stroke={OUTLINE} strokeWidth={1} />
+      </G>
+    );
+    const pods: string[] = ['M74 132 q-8 22 -2 40', 'M130 116 q10 20 4 40', 'M94 96 q-10 14 -10 30'];
+    return (
+      <G>
+        {full &&
+          part(
+            'root',
+            <G>
+              <Glow show={highlight === 'root'}>
+                <Ellipse cx={100} cy={200} rx={36} ry={26} fill={colors.sun} />
+              </Glow>
+              {roots(ROOT, ['M100 176 v48', 'M100 186 q-14 6 -22 18', 'M100 186 q14 6 22 16', 'M100 204 l-8 8', 'M100 200 l8 8'], 2.5)}
+            </G>,
+          )}
+        {part(
+          'stem',
+          <G>
+            <Glow show={highlight === 'stem'}>
+              <Rect x={88} y={84} width={24} height={92} rx={10} fill={colors.sun} />
+            </Glow>
+            <Path d="M100 176 q-2 -40 2 -86 M100 142 q-16 -10 -28 -12 M101 122 q16 -8 30 -6" stroke="#6BAA3A" strokeWidth={3.5} strokeLinecap="round" fill="none" />
+          </G>,
+        )}
+        {part(
+          'leaf',
+          <G>
+            <Glow show={highlight === 'leaf'}>
+              <Ellipse cx={102} cy={108} rx={58} ry={40} fill={colors.sun} />
+            </Glow>
+            {trio(70, 126, 0)}
+            {trio(134, 112, 1)}
+            {trio(102, 84, 2)}
+            {trio(84, 150, 3)}
+            {trio(120, 146, 4)}
+          </G>,
+        )}
+        {part(
+          'fruit',
+          <G>
+            <Glow show={highlight === 'fruit'}>
+              <Rect x={62} y={130} width={20} height={42} rx={10} fill={colors.sun} />
+              <Rect x={124} y={114} width={20} height={42} rx={10} fill={colors.sun} />
+              <Rect x={82} y={94} width={20} height={32} rx={10} fill={colors.sun} />
+            </Glow>
+            {pods.map((d, i) => (
+              <G key={i}>
+                <Path d={d} stroke="#3E5A2A" strokeWidth={7} strokeLinecap="round" fill="none" />
+                <Path d={d} stroke="#6E8B4A" strokeWidth={1.5} strokeDasharray="3 4" fill="none" />
+              </G>
+            ))}
+          </G>,
+        )}
+      </G>
+    );
+  },
+
+  niyog: ({ part, highlight, full }) => {
+    // Frond: a curved midrib with leaflets sticking out both sides.
+    const frond = (x2: number, y2: number, cx: number, cy: number, k: number) => {
+      const x0 = 112;
+      const y0 = 50;
+      const lines = [];
+      for (let t = 0.15; t <= 0.95; t += 0.1) {
+        const x = (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * cx + t * t * x2;
+        const y = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * y2;
+        const dx = 2 * (1 - t) * (cx - x0) + 2 * t * (x2 - cx);
+        const dy = 2 * (1 - t) * (cy - y0) + 2 * t * (y2 - cy);
+        const len = Math.hypot(dx, dy) || 1;
+        const nx = (-dy / len) * 11 * (1 - t * 0.4);
+        const ny = (dx / len) * 11 * (1 - t * 0.4);
+        lines.push(`M${x} ${y} l${nx} ${ny + 3} M${x} ${y} l${-nx} ${-ny + 3}`);
+      }
+      return (
+        <G key={k}>
+          <Path d={lines.join(' ')} stroke={k % 2 ? colors.leaf : colors.leafDark} strokeWidth={2.4} strokeLinecap="round" />
+          <Path d={`M${x0} ${y0} Q${cx} ${cy} ${x2} ${y2}`} stroke="#6E8B3D" strokeWidth={2.4} fill="none" />
+        </G>
+      );
+    };
+    return (
+      <G>
+        {full &&
+          part(
+            'root',
+            <G>
+              <Glow show={highlight === 'root'}>
+                <Ellipse cx={100} cy={196} rx={56} ry={24} fill={colors.sun} />
+              </Glow>
+              {roots(ROOT, ['M100 176 q-2 16 0 30', 'M100 178 q-24 6 -48 12', 'M100 178 q24 6 48 12', 'M98 180 q-14 14 -30 22', 'M102 180 q14 14 30 22', 'M100 180 q-6 18 -10 30', 'M100 180 q6 18 10 30'], 2)}
+            </G>,
+          )}
+        {part(
+          'stem',
+          <G>
+            <Glow show={highlight === 'stem'}>
+              <Rect x={86} y={52} width={34} height={126} rx={14} fill={colors.sun} />
+            </Glow>
+            <Path d="M92 176 q-4 -60 14 -124 h10 q-16 64 -12 124z" fill="#A47A4F" stroke={OUTLINE} strokeWidth={1.5} />
+            {[160, 144, 128, 112, 96, 80, 66].map((y, i) => (
+              <Path key={i} d={`M${94 + (176 - y) * 0.08} ${y} h10`} stroke="#7A5530" strokeWidth={1.4} />
+            ))}
+          </G>,
+        )}
+        {part(
+          'leaf',
+          <G>
+            <Glow show={highlight === 'leaf'}>
+              <Ellipse cx={108} cy={44} rx={94} ry={40} fill={colors.sun} />
+            </Glow>
+            {frond(30, 82, 60, 30, 0)}
+            {frond(24, 42, 70, 18, 1)}
+            {frond(70, 10, 90, 18, 2)}
+            {frond(156, 8, 130, 14, 3)}
+            {frond(190, 44, 160, 20, 4)}
+            {frond(182, 86, 160, 40, 5)}
+          </G>,
+        )}
+        {part(
+          'fruit',
+          <G>
+            <Glow show={highlight === 'fruit'}>
+              <Circle cx={112} cy={62} r={20} fill={colors.sun} />
+            </Glow>
+            {[[104, 58], [119, 58], [111, 69], [124, 68]].map(([x, y], i) => (
+              <G key={i}>
+                <Circle cx={x} cy={y} r={7.5} fill={i === 3 ? '#9A6A3A' : '#6E9B3A'} stroke={OUTLINE} strokeWidth={1.3} />
+                <Circle cx={x - 2.5} cy={y - 2.5} r={2} fill={colors.white} opacity={0.4} />
+              </G>
+            ))}
+          </G>,
+        )}
+      </G>
+    );
+  },
+
+  narra: ({ part, highlight, full }) => (
+    <G>
+      {part(
+        'root',
+        <G>
+          <Glow show={highlight === 'root'}>
+            <Ellipse cx={100} cy={full ? 188 : 172} rx={48} ry={full ? 40 : 14} fill={colors.sun} />
+          </Glow>
+          {/* Buttress roots flare out like walls at the bottom of the trunk */}
+          <Path d="M92 150 q-6 18 -26 26 h26z M108 150 q6 18 26 26 h-26z" fill="#7A3F22" stroke={OUTLINE} strokeWidth={1.2} />
+          {full ? roots(ROOT, ['M100 176 v50', 'M86 178 q-20 8 -40 22', 'M114 178 q20 8 40 20', 'M96 182 q-8 16 -18 28', 'M104 182 q8 16 18 28'], 3.5) : null}
+        </G>,
+      )}
+      {part(
+        'stem',
+        <G>
+          <Glow show={highlight === 'stem'}>
+            <Rect x={84} y={84} width={32} height={70} rx={12} fill={colors.sun} />
+          </Glow>
+          <Path d="M92 176 q2 -50 2 -92 h12 q0 42 2 92z" fill="#8A4B2A" stroke={OUTLINE} strokeWidth={1.5} />
+          <Path d="M96 90 q-18 -10 -36 -14 M104 90 q18 -12 38 -14" stroke="#8A4B2A" strokeWidth={6} strokeLinecap="round" fill="none" />
+          <Path d="M98 110 q2 20 0 40 M104 100 q-1 14 1 26" stroke="#6A3218" strokeWidth={1.4} fill="none" />
+        </G>,
+      )}
+      {part(
+        'leaf',
+        <G>
+          <Glow show={highlight === 'leaf'}>
+            <Ellipse cx={100} cy={58} rx={96} ry={52} fill={colors.sun} />
+          </Glow>
+          <Ellipse cx={100} cy={60} rx={88} ry={44} fill={colors.leafDark} stroke={OUTLINE} strokeWidth={1.5} />
+          <Circle cx={46} cy={62} r={30} fill={colors.leaf} />
+          <Circle cx={88} cy={38} r={34} fill={colors.leaf} />
+          <Circle cx={138} cy={40} r={32} fill={colors.leafLight} />
+          <Circle cx={156} cy={70} r={26} fill={colors.leaf} />
+          <Circle cx={100} cy={76} r={26} fill={colors.leafLight} />
+          {[[40, 50, -20], [80, 24, 10], [134, 26, -10], [160, 60, 30], [70, 76, 15], [118, 64, -25]].map(([x, y, r], i) => (
+            <Ellipse key={i} cx={x} cy={y} rx={9} ry={4} fill={colors.white} opacity={0.3} transform={`rotate(${r} ${x} ${y})`} />
+          ))}
+        </G>,
+      )}
+      {part(
+        'fruit',
+        <G>
+          <Glow show={highlight === 'fruit'}>
+            {[[58, 84], [142, 80], [96, 92], [122, 28]].map(([x, y], i) => (
+              <Circle key={i} cx={x} cy={y} r={14} fill={colors.sun} />
+            ))}
+          </Glow>
+          {[[58, 84], [142, 80], [96, 92], [122, 28]].map(([x, y], i) => (
+            <G key={i}>
+              <Circle cx={x} cy={y} r={8} fill="#E3CF86" stroke={OUTLINE} strokeWidth={1.2} />
+              <Circle cx={x} cy={y} r={3.2} fill="#A9843E" />
+            </G>
+          ))}
+        </G>,
+      )}
+    </G>
+  ),
+
+  kawayan: ({ part, highlight, full }) => {
+    const culms = [76, 98, 120];
+    return (
+      <G>
+        {full &&
+          part(
+            'root',
+            <G>
+              <Glow show={highlight === 'root'}>
+                <Rect x={22} y={182} width={156} height={34} rx={14} fill={colors.sun} />
+              </Glow>
+              <Path d="M30 192 h140" stroke="#C9A060" strokeWidth={7} strokeLinecap="round" />
+              {[40, 60, 82, 104, 126, 148, 164].map((x, i) => (
+                <Path key={i} d={`M${x} 194 q${i % 2 ? 4 : -4} 10 ${i % 2 ? 2 : -2} 20`} stroke={ROOT} strokeWidth={2} fill="none" />
+              ))}
+              <Path d="M82 178 v12 M104 178 v12 M126 178 v12" stroke="#C9A060" strokeWidth={4} />
+            </G>,
+          )}
+        {part(
+          'leaf',
+          <G>
+            <Glow show={highlight === 'leaf'}>
+              <Ellipse cx={100} cy={52} rx={92} ry={46} fill={colors.sun} />
+            </Glow>
+            {[
+              [60, 40, -30], [52, 70, -15], [140, 34, 30], [150, 64, 15], [88, 22, -50], [116, 18, 45], [66, 98, -20], [134, 92, 20], [100, 50, 0],
+            ].map(([x, y, r], i) => (
+              <G key={i} transform={`rotate(${r} ${x} ${y})`}>
+                <Ellipse cx={x - 10} cy={y} rx={13} ry={3.4} fill={colors.leaf} stroke={OUTLINE} strokeWidth={0.8} transform={`rotate(-20 ${x} ${y})`} />
+                <Ellipse cx={x + 10} cy={y} rx={13} ry={3.4} fill={colors.leafLight} stroke={OUTLINE} strokeWidth={0.8} transform={`rotate(20 ${x} ${y})`} />
+              </G>
+            ))}
+          </G>,
+        )}
+        {part(
+          'stem',
+          <G>
+            <Glow show={highlight === 'stem'}>
+              {culms.map((x) => (
+                <Rect key={x} x={x - 10} y={12} width={20} height={166} rx={8} fill={colors.sun} />
+              ))}
+            </Glow>
+            {culms.map((x, i) => (
+              <G key={x}>
+                <Rect x={x - 6} y={18 + i * 6} width={12} height={158 - i * 6} rx={4} fill={i === 1 ? '#7CB342' : '#8BC34A'} stroke={OUTLINE} strokeWidth={1.2} />
+                {[40, 66, 92, 118, 144].map((y) => (
+                  <Path key={y} d={`M${x - 6} ${y + i * 4} h12`} stroke="#4E7A22" strokeWidth={2} />
+                ))}
+              </G>
+            ))}
+          </G>,
+        )}
+        {part(
+          'shoot',
+          <G>
+            <Glow show={highlight === 'shoot'}>
+              <Ellipse cx={153} cy={160} rx={16} ry={22} fill={colors.sun} />
+            </Glow>
+            <Path d="M143 176 q4 -22 10 -36 q6 14 10 36z" fill="#B8A05A" stroke={OUTLINE} strokeWidth={1.3} />
+            <Path d="M146 166 q7 -4 14 0 M148 156 q5 -3 10 0" stroke="#8A7038" strokeWidth={1.4} fill="none" />
+          </G>,
+        )}
+      </G>
+    );
+  },
+
+  bakawan: ({ part, highlight, full }) => {
+    const seedlings: [number, number, number][] = [[68, 74, 112], [134, 72, 114], [86, 80, 108], [118, 82, 106]];
+    return (
+      <G>
+        {/* Salty coastal water over the mud */}
+        <Rect x={0} y={142} width={200} height={full ? 40 : 34} fill="#A8DDF5" />
+        <Path d="M10 150 q10 -4 20 0 t20 0 M120 160 q10 -4 20 0 t20 0 M60 170 q10 -4 20 0 t20 0" stroke={colors.white} strokeWidth={1.6} fill="none" />
+        {part(
+          'root',
+          <G>
+            <Glow show={highlight === 'root'}>
+              <Ellipse cx={100} cy={148} rx={82} ry={36} fill={colors.sun} />
+            </Glow>
+            {['M100 118 q-32 10 -48 58', 'M100 124 q-14 20 -22 52', 'M100 124 q14 20 22 52', 'M100 118 q32 10 48 58', 'M100 110 q-52 10 -72 66', 'M100 110 q52 10 72 66'].map((d, i) => (
+              <Path key={i} d={d} stroke="#8A5A34" strokeWidth={4} strokeLinecap="round" fill="none" />
+            ))}
+          </G>,
+        )}
+        {part(
+          'stem',
+          <G>
+            <Glow show={highlight === 'stem'}>
+              <Rect x={88} y={64} width={24} height={60} rx={10} fill={colors.sun} />
+            </Glow>
+            <Path d="M95 124 q-2 -30 0 -58 h10 q2 28 0 58z" fill="#7A5230" stroke={OUTLINE} strokeWidth={1.4} />
+          </G>,
+        )}
+        {part(
+          'leaf',
+          <G>
+            <Glow show={highlight === 'leaf'}>
+              <Ellipse cx={100} cy={46} rx={92} ry={42} fill={colors.sun} />
+            </Glow>
+            <Ellipse cx={100} cy={48} rx={82} ry={36} fill="#2F6B2A" stroke={OUTLINE} strokeWidth={1.5} />
+            {[
+              [40, 50, -30], [62, 28, -15], [92, 18, 5], [124, 20, -5], [150, 32, 15], [164, 54, 30], [76, 58, 20], [120, 56, -20], [100, 40, 0],
+            ].map(([x, y, r], i) => (
+              <G key={i}>
+                <Ellipse cx={x} cy={y} rx={14} ry={7.5} fill={i % 2 ? colors.leaf : '#3F8A35'} stroke={OUTLINE} strokeWidth={1} transform={`rotate(${r} ${x} ${y})`} />
+                <Ellipse cx={x - 3} cy={y - 2} rx={4.5} ry={1.6} fill={colors.white} opacity={0.45} transform={`rotate(${r} ${x} ${y})`} />
+              </G>
+            ))}
+          </G>,
+        )}
+        {part(
+          'fruit',
+          <G>
+            <Glow show={highlight === 'fruit'}>
+              {seedlings.map(([x, y1, y2]) => (
+                <Rect key={x} x={x - 8} y={y1 - 4} width={16} height={y2 - y1 + 8} rx={8} fill={colors.sun} />
+              ))}
+            </Glow>
+            {seedlings.map(([x, y1, y2]) => (
+              <G key={x}>
+                <Path d={`M${x} ${y1} V${y2}`} stroke="#5B8C2A" strokeWidth={4.5} strokeLinecap="round" />
+                <Path d={`M${x} ${y2 - 6} V${y2}`} stroke="#7A5230" strokeWidth={4.5} strokeLinecap="round" />
+              </G>
+            ))}
+          </G>,
+        )}
+      </G>
+    );
+  },
+
+  kangkong: ({ part, highlight, full }) => {
+    const nodes = [40, 100, 160];
+    const arrowLeaf = (x: number, y: number, r: number, k: number) => (
+      <G key={k} transform={`rotate(${r} ${x} ${y})`}>
+        <Path d={`M${x} ${y - 30} q-15 14 -13 28 l13 -7 l13 7 q2 -14 -13 -28z`} fill={k % 2 ? colors.leaf : colors.leafLight} stroke={OUTLINE} strokeWidth={1.2} />
+        <Path d={`M${x} ${y - 28} v24`} stroke={colors.leafDark} strokeWidth={1.2} />
+      </G>
+    );
+    const trumpet = (x: number, y: number, k: number) => (
+      <G key={k}>
+        <Path d={`M${x} ${y + 12} l-11 -18 q11 -7 22 0z`} fill="#F3E5F5" stroke={OUTLINE} strokeWidth={1.2} />
+        <Circle cx={x} cy={y - 3} r={3} fill="#9C6BC0" />
+      </G>
+    );
+    return (
+      <G>
+        {/* Pond water */}
+        <Rect x={0} y={122} width={200} height={full ? 60 : 60} fill="#A8DDF5" />
+        <Path d="M14 148 q10 -4 20 0 t20 0 M110 160 q10 -4 20 0 t20 0" stroke={colors.white} strokeWidth={1.6} fill="none" />
+        {part(
+          'root',
+          <G>
+            <Glow show={highlight === 'root'}>
+              <Rect x={20} y={130} width={160} height={46} rx={16} fill={colors.sun} />
+            </Glow>
+            {nodes.map((x) => (
+              <Path key={x} d={`M${x} 130 q-4 14 -2 28 M${x} 130 q4 12 6 24 M${x} 130 v32`} stroke="#C9B79A" strokeWidth={1.6} fill="none" />
+            ))}
+          </G>,
+        )}
+        {part(
+          'stem',
+          <G>
+            <Glow show={highlight === 'stem'}>
+              <Rect x={0} y={116} width={200} height={20} rx={10} fill={colors.sun} />
+            </Glow>
+            <Path d="M4 128 q48 -8 96 0 t96 -2" stroke="#8BC34A" strokeWidth={8} strokeLinecap="round" fill="none" />
+            <Path d="M4 128 q48 -8 96 0 t96 -2" stroke="#DDF0C0" strokeWidth={2.5} strokeLinecap="round" fill="none" />
+            {nodes.map((x, i) => (
+              <Path key={x} d={`M${x} 126 q${i === 1 ? 2 : -4} -14 ${i === 1 ? 0 : -8} -26`} stroke="#8BC34A" strokeWidth={3} fill="none" />
+            ))}
+          </G>,
+        )}
+        {part(
+          'leaf',
+          <G>
+            <Glow show={highlight === 'leaf'}>
+              <Ellipse cx={100} cy={88} rx={92} ry={32} fill={colors.sun} />
+            </Glow>
+            {arrowLeaf(32, 102, -15, 0)}
+            {arrowLeaf(100, 100, 0, 1)}
+            {arrowLeaf(152, 100, 15, 2)}
+            {arrowLeaf(60, 112, -35, 3)}
+            {arrowLeaf(128, 112, 30, 4)}
+            {arrowLeaf(184, 114, 30, 5)}
+          </G>,
+        )}
+        {part(
+          'flower',
+          <G>
+            <Glow show={highlight === 'flower'}>
+              <Circle cx={70} cy={56} r={18} fill={colors.sun} />
+              <Circle cx={130} cy={52} r={18} fill={colors.sun} />
+            </Glow>
+            <Path d="M70 68 q2 22 -6 40 M130 64 q-2 24 4 42" stroke="#8BC34A" strokeWidth={2.5} fill="none" />
+            {trumpet(70, 56, 0)}
+            {trumpet(130, 52, 1)}
           </G>,
         )}
       </G>

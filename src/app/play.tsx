@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Leaf, X } from 'lucide-react-native';
+import { ArrowRight, Leaf, X } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
@@ -12,7 +12,7 @@ import { Confetti } from '@/components/Confetti';
 import { ProgressBar } from '@/components/ProgressBar';
 import { SoundToggle } from '@/components/SoundToggle';
 import { SpeakButton } from '@/components/SpeakButton';
-import { getPlant, plantsInWorld, WORLDS, type PartKey } from '@/data/plants';
+import { getPlant, PLANTS, plantsInWorld, WORLDS, type PartKey } from '@/data/plants';
 import { levelQuiz, plantQuiz, type Level, type Question } from '@/data/questions';
 import type { AnswerRecord } from '@/db/queries';
 import { feedback } from '@/lib/feedback';
@@ -106,6 +106,9 @@ export default function Play() {
   if (!q) return null;
 
   if (result) {
+    // A passed plant quiz leads straight on to the next stop on the adventure path (across worlds too).
+    const passedPlant = Boolean(plantId && snapshot.progress[plantId]?.completed);
+    const nextPlant = passedPlant ? PLANTS[PLANTS.findIndex((p) => p.id === plantId) + 1] : undefined;
     return (
       <Results
         score={answers.filter((a) => a.correct).length}
@@ -117,6 +120,8 @@ export default function Play() {
         unlocked={Boolean(plantId && !wasCompleted && snapshot.progress[plantId]?.completed)}
         worldDone={plantId && !wasCompleted ? finishedWorld(plantId, snapshot.progress) : null}
         failedPlant={Boolean(plantId && !snapshot.progress[plantId]?.completed)}
+        nextPlant={nextPlant?.name}
+        onNext={() => nextPlant && router.replace({ pathname: '/plant/[id]', params: { id: nextPlant.id } })}
         onAgain={() => router.replace({ pathname: '/play', params: plantId ? { plant: plantId } : { level: level! } })}
         onDone={() => goBack(router, exitTo)}
       />
@@ -382,6 +387,8 @@ function Results({
   unlocked,
   worldDone,
   failedPlant,
+  nextPlant,
+  onNext,
   onAgain,
   onDone,
 }: {
@@ -395,6 +402,9 @@ function Results({
   /** Set when this quiz finished the last plant of a world. */
   worldDone: { world: string; next?: string } | null;
   failedPlant: boolean;
+  /** Name of the next plant on the path, when this plant's quiz is passed. */
+  nextPlant?: string;
+  onNext: () => void;
   onAgain: () => void;
   onDone: () => void;
 }) {
@@ -422,14 +432,14 @@ function Results({
   return (
     <View className="flex-1" style={{ backgroundColor: celebrate ? colors.sunPale : colors.leafPale }}>
       <SafeAreaView edges={['top', 'bottom']} className="flex-1 justify-between px-6 pb-4">
-        <View className="items-center pt-10">
+        <View className="items-center pt-4">
           <Animated.View entering={ZoomIn.springify().damping(10)}>
-            <Binhi stage={growth.stage} mood="cheer" size={150} hopKey={1} />
+            <Binhi stage={growth.stage} mood="cheer" size={nextPlant ? 112 : 140} hopKey={1} />
           </Animated.View>
-          <Text className="mt-4 text-center font-heading text-[34px] text-ink">{title}</Text>
+          <Text className="mt-3 text-center font-heading text-[32px] text-ink">{title}</Text>
           <Text className="mt-1 text-center font-medium text-[18px] text-muted">{line}</Text>
 
-          <View className="mt-8 flex-row gap-3 self-stretch">
+          <View className="mt-6 flex-row gap-3 self-stretch">
             <View
               className="flex-1 items-center rounded-3xl bg-white py-4"
               style={{ borderBottomWidth: 6, borderBottomColor: colors.sandDark }}>
@@ -457,8 +467,33 @@ function Results({
           </View>
         </View>
         <View className="gap-3">
-          <ChunkyButton label="DONE" onPress={onDone} />
-          <ChunkyButton label="PLAY AGAIN" variant="white" onPress={onAgain} />
+          {nextPlant ? (
+            <>
+              <ChunkyButton
+                label={`NEXT PLANT: ${nextPlant.toUpperCase()}`}
+                icon={<ArrowRight size={22} color={colors.white} strokeWidth={3} />}
+                onPress={onNext}
+              />
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <ChunkyButton label="PLAY AGAIN" variant="white" size="md" onPress={onAgain} />
+                </View>
+                <View className="flex-1">
+                  <ChunkyButton label="DONE" variant="white" size="md" onPress={onDone} />
+                </View>
+              </View>
+            </>
+          ) : failedPlant ? (
+            <>
+              <ChunkyButton label="TRY AGAIN" variant="coral" onPress={onAgain} />
+              <ChunkyButton label="DONE" variant="white" onPress={onDone} />
+            </>
+          ) : (
+            <>
+              <ChunkyButton label="DONE" onPress={onDone} />
+              <ChunkyButton label="PLAY AGAIN" variant="white" onPress={onAgain} />
+            </>
+          )}
         </View>
       </SafeAreaView>
       <Confetti playKey={1} />

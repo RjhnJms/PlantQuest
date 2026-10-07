@@ -156,13 +156,14 @@ The student's grade picks the starting level. They can choose to try the other l
 
 | World 1: Bakuran (backyard) | World 2: Bukid (farm) | World 3: Kalikasan (nature) |
 |---|---|---|
-| Sampaguita ✅ | Palay | Narra |
-| Gumamela ✅ | Mango ✅ | Kawayan |
-| Makahiya ✅ | Saba | Pako |
-| Kalamansi ✅ | Mongo | Bakawan |
-| Malunggay ✅ | Niyog | Kangkong |
+| Sampaguita ✅ | Palay ✅ | Narra ✅ |
+| Gumamela ✅ | Mango ✅ | Kawayan ✅ |
+| Makahiya ✅ | Saba ✅ | Pako ✅ |
+| Kalamansi ✅ | Mongo ✅ | Bakawan ✅ |
+| Malunggay ✅ | Niyog ✅ | Kangkong ✅ |
 
-✅ = built. Mango and Sampaguita are kept from the original mockup as Philippine symbols.
+After passing a plant quiz, a NEXT PLANT button leads to the next stop (across worlds).
+Mango and Sampaguita are kept from the original mockup as Philippine symbols.
 
 Each plant has:
 - `id`, `name`, `scientificName`, `color` (theme color), `shortDescription`
