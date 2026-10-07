@@ -15,6 +15,7 @@ import { getPlant, type PartKey } from '@/data/plants';
 import { levelQuiz, plantQuiz, type Level, type Question } from '@/data/questions';
 import type { AnswerRecord } from '@/db/queries';
 import { feedback } from '@/lib/feedback';
+import { goBack } from '@/lib/nav';
 import { displayName, stageFor, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
 import { speak, stopSpeaking } from '@/lib/speech';
@@ -39,6 +40,8 @@ export default function Play() {
   const { snapshot, finishQuiz } = useGame();
   const plantId = params.plant ?? null;
   const level = plantId ? null : (params.level ?? 'sprout');
+  // Where X / DONE lead when the quiz was opened directly and there is no screen behind it.
+  const exitTo = plantId ? ({ pathname: '/plant/[id]', params: { id: plantId } } as const) : '/quiz';
 
   const questions = useMemo(() => (plantId ? plantQuiz(plantId) : levelQuiz(level!)), [plantId, level]);
   const startedAt = useRef(new Date().toISOString());
@@ -113,7 +116,7 @@ export default function Play() {
         unlocked={Boolean(plantId && !wasCompleted && snapshot.progress[plantId]?.completed)}
         failedPlant={Boolean(plantId && !snapshot.progress[plantId]?.completed)}
         onAgain={() => router.replace({ pathname: '/play', params: plantId ? { plant: plantId } : { level: level! } })}
-        onDone={() => router.back()}
+        onDone={() => goBack(router, exitTo)}
       />
     );
   }
@@ -129,7 +132,7 @@ export default function Play() {
     <View className="flex-1 bg-cream">
       <SafeAreaView edges={['top']} className="flex-1">
         <View className="flex-row items-center gap-3 px-5 pt-2">
-          <Pressable accessibilityRole="button" accessibilityLabel="Quit quiz" hitSlop={10} onPress={() => router.back()}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Quit quiz" hitSlop={10} onPress={() => goBack(router, exitTo)}>
             <X size={30} color={colors.faint} strokeWidth={3} />
           </Pressable>
           <View className="flex-1">

@@ -4,6 +4,7 @@ import type { PropsWithChildren, ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View, type ScrollViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { goBack } from '@/lib/nav';
 import { colors } from '@/lib/palette';
 
 export function Screen({
@@ -32,7 +33,7 @@ export function BackButton({ onPress }: { onPress?: () => void }) {
       accessibilityRole="button"
       accessibilityLabel="Go back"
       hitSlop={10}
-      onPress={onPress ?? (() => (router.canGoBack() ? router.back() : router.replace('/')))}
+      onPress={onPress ?? (() => goBack(router))}
       className="h-11 w-11 items-center justify-center rounded-2xl bg-white"
       style={{ borderBottomWidth: 3, borderBottomColor: colors.sandDark }}>
       <ChevronLeft size={26} color={colors.ink} strokeWidth={2.8} />

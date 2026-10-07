@@ -8,6 +8,7 @@ import { ChunkyButton } from '@/components/ChunkyButton';
 import { cleanName, GradePicker, MAX_NAME } from '@/components/GradePicker';
 import { BackButton } from '@/components/Screen';
 import { feedback } from '@/lib/feedback';
+import { goBack } from '@/lib/nav';
 import { useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
 
@@ -27,7 +28,7 @@ export default function EditProfile() {
     }
     await updateProfile({ name: clean, grade });
     feedback.reward();
-    router.back();
+    goBack(router, '/profile');
   };
 
   return (
