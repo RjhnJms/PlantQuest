@@ -100,6 +100,7 @@ function RootNavigator() {
           <Stack.Screen name="plant/[id]" />
           <Stack.Screen name="play" options={{ gestureEnabled: false, animation: 'slide_from_bottom' }} />
           <Stack.Screen name="edit-profile" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="settings" />
         </Stack.Protected>
       </Stack>
     </>

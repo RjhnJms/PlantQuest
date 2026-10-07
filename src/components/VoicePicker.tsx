@@ -78,7 +78,7 @@ function Option({
  * "Binhi's voice": the student picks from the offline English voices on their phone (with a preview),
  * plus a style that changes the pitch. Phones don't label voices male or female, so the student simply listens and chooses.
  */
-export function VoicePicker() {
+export function VoicePicker({ showTitle = true }: { showTitle?: boolean }) {
   const { snapshot, updateProfile } = useGame();
   const { voiceId, voiceStyle } = snapshot.profile;
   const [voices, setVoices] = useState<BinhiVoice[] | null>(null);
@@ -117,7 +117,7 @@ export function VoicePicker() {
 
   return (
     <View>
-      <Text className="font-heading text-[18px] text-ink">Binhi&apos;s voice</Text>
+      {showTitle ? <Text className="font-heading text-[18px] text-ink">Binhi&apos;s voice</Text> : null}
       <Text className="mb-3 font-body text-[14px] text-muted">Tap ▶ to listen, then pick the one you like.</Text>
 
       {voices === null ? (
