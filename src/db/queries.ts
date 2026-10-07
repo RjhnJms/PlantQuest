@@ -6,6 +6,7 @@ import type { Level } from '@/data/questions';
 export type Profile = {
   name: string | null;
   grade: number | null;
+  avatar: string | null;
   joinedAt: string;
   onboarded: boolean;
   autoRead: boolean;
@@ -54,11 +55,12 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
   const p = await db.getFirstAsync<{
     name: string | null;
     grade: number | null;
+    avatar: string | null;
     joined_at: string;
     onboarded: number;
     auto_read: number;
     speech_rate: number;
-  }>('SELECT name, grade, joined_at, onboarded, auto_read, speech_rate FROM profile WHERE id = 1');
+  }>('SELECT name, grade, avatar, joined_at, onboarded, auto_read, speech_rate FROM profile WHERE id = 1');
   const leaves = await db.getFirstAsync<{ total: number | null }>('SELECT SUM(amount) AS total FROM leaves_log');
   const rows = await db.getAllAsync<{ plant_id: string; parts_tapped: string; completed: number }>(
     'SELECT plant_id, parts_tapped, completed FROM plant_progress',
@@ -84,6 +86,7 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
     profile: {
       name: p?.name ?? null,
       grade: p?.grade ?? null,
+      avatar: p?.avatar ?? null,
       joinedAt: p?.joined_at ?? now(),
       onboarded: p?.onboarded === 1,
       autoRead: (p?.auto_read ?? 1) === 1,
@@ -99,7 +102,7 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
 
 export async function saveProfile(
   db: SQLiteDatabase,
-  fields: Partial<Pick<Profile, 'name' | 'grade' | 'onboarded' | 'autoRead' | 'speechRate'>>,
+  fields: Partial<Pick<Profile, 'name' | 'grade' | 'avatar' | 'onboarded' | 'autoRead' | 'speechRate'>>,
 ) {
   const sets: string[] = [];
   const values: (string | number | null)[] = [];
@@ -110,6 +113,10 @@ export async function saveProfile(
   if ('grade' in fields) {
     sets.push('grade = ?');
     values.push(fields.grade ?? null);
+  }
+  if ('avatar' in fields) {
+    sets.push('avatar = ?');
+    values.push(fields.avatar ?? null);
   }
   if ('onboarded' in fields) {
     sets.push('onboarded = ?');

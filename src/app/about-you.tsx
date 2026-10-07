@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput,
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Binhi } from '@/components/art/Binhi';
+import { AvatarPicker } from '@/components/AvatarPicker';
 import { ChunkyButton } from '@/components/ChunkyButton';
 import { BackButton } from '@/components/Screen';
 import { SpeakButton } from '@/components/SpeakButton';
@@ -16,6 +17,7 @@ export default function AboutYou() {
   const { updateProfile } = useGame();
   const [name, setName] = useState('');
   const [grade, setGrade] = useState<number | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [error, setError] = useState('');
   const clean = cleanName(name);
 
@@ -26,7 +28,7 @@ export default function AboutYou() {
       return;
     }
     // Flipping `onboarded` swaps the navigator over to the main app (see the root layout).
-    await updateProfile(skip ? { onboarded: true } : { name: clean, grade, onboarded: true });
+    await updateProfile(skip ? { onboarded: true } : { name: clean, grade, avatar, onboarded: true });
     feedback.reward();
   };
 
@@ -74,6 +76,10 @@ export default function AboutYou() {
 
           <Text className="mb-3 mt-6 font-heading text-[20px] text-ink">Your grade</Text>
           <GradePicker value={grade} onChange={setGrade} />
+
+          <Text className="mb-1 mt-6 font-heading text-[20px] text-ink">Pick your look</Text>
+          <Text className="mb-3 font-medium text-[14px] text-muted">Swipe to see more. You can change it later.</Text>
+          <AvatarPicker layout="row" value={avatar} onChange={setAvatar} />
         </ScrollView>
 
         <View className="px-6 pb-2">

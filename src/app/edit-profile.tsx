@@ -4,6 +4,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/art/Avatar';
+import { AvatarPicker } from '@/components/AvatarPicker';
 import { ChunkyButton } from '@/components/ChunkyButton';
 import { cleanName, GradePicker, MAX_NAME } from '@/components/GradePicker';
 import { BackButton } from '@/components/Screen';
@@ -17,6 +18,7 @@ export default function EditProfile() {
   const { snapshot, updateProfile } = useGame();
   const [name, setName] = useState(snapshot.profile.name ?? '');
   const [grade, setGrade] = useState<number | null>(snapshot.profile.grade);
+  const [avatar, setAvatar] = useState<string | null>(snapshot.profile.avatar);
   const [error, setError] = useState('');
 
   const save = async () => {
@@ -26,7 +28,7 @@ export default function EditProfile() {
       feedback.tryAgain();
       return;
     }
-    await updateProfile({ name: clean, grade });
+    await updateProfile({ name: clean, grade, avatar });
     feedback.reward();
     goBack(router, '/profile');
   };
@@ -40,7 +42,7 @@ export default function EditProfile() {
         </View>
         <ScrollView contentContainerClassName="px-6 pb-6" keyboardShouldPersistTaps="handled">
           <View className="mt-4 items-center">
-            <Avatar size={96} />
+            <Avatar id={avatar} size={110} />
           </View>
           <Text className="mb-2 mt-6 font-heading text-[20px] text-ink">Your name</Text>
           <TextInput
@@ -63,6 +65,9 @@ export default function EditProfile() {
           </Text>
           <Text className="mb-3 mt-6 font-heading text-[20px] text-ink">Your grade</Text>
           <GradePicker value={grade} onChange={setGrade} />
+
+          <Text className="mb-3 mt-6 font-heading text-[20px] text-ink">Your look</Text>
+          <AvatarPicker value={avatar} onChange={setAvatar} />
         </ScrollView>
         <View className="px-6 pb-2">
           <ChunkyButton label="SAVE" onPress={save} />

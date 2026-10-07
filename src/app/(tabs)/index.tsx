@@ -6,6 +6,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
+import { Avatar } from '@/components/art/Avatar';
 import { Binhi } from '@/components/art/Binhi';
 import { PlantArt } from '@/components/art/PlantArt';
 import { SkyScene } from '@/components/art/SkyScene';
@@ -59,9 +60,9 @@ export default function Home() {
           <SafeAreaView edges={['top']}>
             <View className="flex-row items-center justify-between px-5 pt-2">
               <View className="flex-row items-center gap-2 rounded-full bg-white py-1 pl-1 pr-4" style={{ borderBottomWidth: 3, borderBottomColor: colors.sandDark }}>
-                <View className="h-9 w-9 items-center justify-center rounded-full" style={{ backgroundColor: colors.pink }}>
-                  <Text className="font-heading text-[18px] text-white">{name.charAt(0)}</Text>
-                </View>
+                <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.navigate('/profile')}>
+                  <Avatar id={snapshot.profile.avatar} size={38} />
+                </Pressable>
                 <Text className="font-heading text-[18px] text-ink" numberOfLines={1}>
                   Hi, {name}!
                 </Text>

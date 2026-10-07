@@ -71,7 +71,12 @@ export default function Profile() {
       <ScreenTitle title="Profile" />
 
       <View className="mx-5 items-center rounded-3xl bg-white px-4 pb-4 pt-5" style={{ borderBottomWidth: 6, borderBottomColor: colors.sandDark }}>
-        <Avatar size={112} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Change your look" onPress={() => router.push('/edit-profile')}>
+          <Avatar id={profile.avatar} size={112} />
+          <View className="absolute bottom-0 right-0 h-9 w-9 items-center justify-center rounded-full" style={{ backgroundColor: colors.leaf, borderWidth: 3, borderColor: colors.white }}>
+            <Pencil size={15} color={colors.white} strokeWidth={3} />
+          </View>
+        </Pressable>
         <Text className="mt-2 font-heading text-[28px] text-ink">{displayName(profile)}</Text>
         <View className="mt-3 self-stretch rounded-2xl px-4" style={{ backgroundColor: colors.cream }}>
           <InfoRow icon={<GraduationCap size={22} color={colors.grape} />} label="Grade" value={profile.grade ? `Grade ${profile.grade}` : 'Not set'} />
