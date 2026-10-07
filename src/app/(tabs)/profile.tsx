@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Calendar, GraduationCap, Leaf, Pencil, Sprout, Sun, Trophy } from 'lucide-react-native';
-import { useEffect, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Alert, Platform, Pressable, Switch, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/art/Avatar';
@@ -9,11 +9,12 @@ import { PlantArt } from '@/components/art/PlantArt';
 import { ChunkyButton } from '@/components/ChunkyButton';
 import { Screen, ScreenTitle } from '@/components/Screen';
 import { SoundToggle } from '@/components/SoundToggle';
+import { VoicePicker } from '@/components/VoicePicker';
 import { PLANTS } from '@/data/plants';
 import { feedback } from '@/lib/feedback';
 import { displayName, stageFor, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { hasVoice, speak } from '@/lib/speech';
+import { setSpeechRate, speak } from '@/lib/speech';
 
 function formatJoined(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
@@ -48,11 +49,6 @@ export default function Profile() {
   const { profile } = snapshot;
   const growth = stageFor(snapshot.leaves);
   const explored = PLANTS.filter((p) => snapshot.progress[p.id]);
-  const [voiceOk, setVoiceOk] = useState(true);
-
-  useEffect(() => {
-    void hasVoice().then(setVoiceOk);
-  }, []);
 
   const confirmStartOver = () => {
     const run = () => void startOver();
@@ -176,7 +172,9 @@ export default function Profile() {
                   accessibilityRole="radio"
                   accessibilityState={{ selected: on }}
                   onPress={() => {
-                    void updateProfile({ speechRate: opt.rate }).then(() => speak('rate-test', 'Hello! This is how I sound.'));
+                    setSpeechRate(opt.rate); // apply before the preview so it plays at the new speed
+                    speak('rate-test', 'Hello! This is how I sound.');
+                    void updateProfile({ speechRate: opt.rate });
                   }}
                   className="flex-1 items-center rounded-2xl py-3"
                   style={{ backgroundColor: on ? colors.skyDark : colors.skyPale, borderBottomWidth: 4, borderBottomColor: on ? '#2F98D0' : '#BFE6F8' }}>
@@ -188,11 +186,9 @@ export default function Profile() {
             })}
           </View>
         </View>
-        {!voiceOk ? (
-          <Text className="pb-2 font-medium text-[14px] text-coral-dark">
-            No voice found on this phone. Ask a grown-up to install a voice in Settings, then Text-to-speech.
-          </Text>
-        ) : null}
+        <View className="mt-2 border-t-2 border-sand py-4">
+          <VoicePicker />
+        </View>
       </View>
 
       <Pressable accessibilityRole="button" onPress={confirmStartOver} className="mt-8 items-center py-3">

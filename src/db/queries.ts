@@ -2,6 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 
 import type { PartKey } from '@/data/plants';
 import type { Level } from '@/data/questions';
+import type { VoiceStyle } from '@/lib/speech';
 
 export type Profile = {
   name: string | null;
@@ -12,6 +13,8 @@ export type Profile = {
   autoRead: boolean;
   speechRate: number;
   soundOn: boolean;
+  voiceId: string | null;
+  voiceStyle: VoiceStyle;
 };
 
 export type PlantProgress = {
@@ -62,7 +65,9 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
     auto_read: number;
     speech_rate: number;
     sound_on: number;
-  }>('SELECT name, grade, avatar, joined_at, onboarded, auto_read, speech_rate, sound_on FROM profile WHERE id = 1');
+    voice_id: string | null;
+    voice_style: string;
+  }>('SELECT name, grade, avatar, joined_at, onboarded, auto_read, speech_rate, sound_on, voice_id, voice_style FROM profile WHERE id = 1');
   const leaves = await db.getFirstAsync<{ total: number | null }>('SELECT SUM(amount) AS total FROM leaves_log');
   const rows = await db.getAllAsync<{ plant_id: string; parts_tapped: string; completed: number }>(
     'SELECT plant_id, parts_tapped, completed FROM plant_progress',
@@ -94,6 +99,8 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
       autoRead: (p?.auto_read ?? 1) === 1,
       speechRate: p?.speech_rate ?? 0.85,
       soundOn: (p?.sound_on ?? 1) === 1,
+      voiceId: p?.voice_id ?? null,
+      voiceStyle: (p?.voice_style as VoiceStyle) ?? 'cheerful',
     },
     leaves: leaves?.total ?? 0,
     progress,
@@ -105,7 +112,7 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
 
 export async function saveProfile(
   db: SQLiteDatabase,
-  fields: Partial<Pick<Profile, 'name' | 'grade' | 'avatar' | 'onboarded' | 'autoRead' | 'speechRate' | 'soundOn'>>,
+  fields: Partial<Pick<Profile, 'name' | 'grade' | 'avatar' | 'onboarded' | 'autoRead' | 'speechRate' | 'soundOn' | 'voiceId' | 'voiceStyle'>>,
 ) {
   const sets: string[] = [];
   const values: (string | number | null)[] = [];
@@ -132,6 +139,14 @@ export async function saveProfile(
   if ('soundOn' in fields) {
     sets.push('sound_on = ?');
     values.push(fields.soundOn ? 1 : 0);
+  }
+  if ('voiceId' in fields) {
+    sets.push('voice_id = ?');
+    values.push(fields.voiceId ?? null);
+  }
+  if ('voiceStyle' in fields) {
+    sets.push('voice_style = ?');
+    values.push(fields.voiceStyle ?? 'cheerful');
   }
   if ('speechRate' in fields) {
     sets.push('speech_rate = ?');

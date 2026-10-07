@@ -17,7 +17,7 @@ import { DATABASE_NAME, migrateDbIfNeeded } from '@/db/schema';
 import { setSoundEnabled } from '@/lib/feedback';
 import { GameProvider, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { setAutoSpeech, setSpeechRate } from '@/lib/speech';
+import { listBinhiVoices, setAutoSpeech, setSpeechRate, setVoice, setVoiceStyle } from '@/lib/speech';
 
 import '../global.css';
 
@@ -58,11 +58,23 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const { snapshot } = useGame();
-  const { onboarded, speechRate, soundOn } = snapshot.profile;
+  const { onboarded, speechRate, soundOn, voiceId, voiceStyle } = snapshot.profile;
 
   useEffect(() => {
     setSpeechRate(speechRate);
   }, [speechRate]);
+
+  // Binhi's voice: use the saved one if this phone still has it, otherwise the best offline voice.
+  useEffect(() => {
+    setVoiceStyle(voiceStyle);
+    let active = true;
+    void listBinhiVoices().then((voices) => {
+      if (active) setVoice(voiceId && voices.some((v) => v.id === voiceId) ? voiceId : null);
+    });
+    return () => {
+      active = false;
+    };
+  }, [voiceId, voiceStyle]);
 
   useEffect(() => {
     setSoundEnabled(soundOn);
