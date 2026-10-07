@@ -1,12 +1,13 @@
 import { useRouter } from 'expo-router';
 import { Calendar, GraduationCap, Leaf, Pencil, Sprout, Sun, Trophy } from 'lucide-react-native';
-import type { ReactNode } from 'react';
-import { Alert, Platform, Pressable, Switch, Text, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { Pressable, Switch, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/art/Avatar';
 import { Binhi } from '@/components/art/Binhi';
 import { PlantArt } from '@/components/art/PlantArt';
 import { ChunkyButton } from '@/components/ChunkyButton';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Screen, ScreenTitle } from '@/components/Screen';
 import { SoundToggle } from '@/components/SoundToggle';
 import { VoicePicker } from '@/components/VoicePicker';
@@ -50,18 +51,7 @@ export default function Profile() {
   const growth = stageFor(snapshot.leaves);
   const explored = PLANTS.filter((p) => snapshot.progress[p.id]);
 
-  const confirmStartOver = () => {
-    const run = () => void startOver();
-    const msg = 'This clears your leaves, garden and quiz scores. Binhi goes back to a seed.';
-    if (Platform.OS === 'web') {
-      if (window.confirm(msg)) run();
-      return;
-    }
-    Alert.alert('Start over?', msg, [
-      { text: 'Keep my progress', style: 'cancel' },
-      { text: 'Start over', style: 'destructive', onPress: run },
-    ]);
-  };
+  const [askStartOver, setAskStartOver] = useState(false);
 
   return (
     <Screen>
@@ -191,9 +181,22 @@ export default function Profile() {
         </View>
       </View>
 
-      <Pressable accessibilityRole="button" onPress={confirmStartOver} className="mt-8 items-center py-3">
+      <Pressable accessibilityRole="button" onPress={() => setAskStartOver(true)} className="mt-8 items-center py-3">
         <Text className="font-semibold text-[15px] text-faint">Start over</Text>
       </Pressable>
+
+      <ConfirmDialog
+        visible={askStartOver}
+        title="Start over?"
+        message="This clears your leaves, garden and quiz scores. Binhi goes back to a seed."
+        cancelLabel="KEEP MY PROGRESS"
+        confirmLabel="Start over"
+        onCancel={() => setAskStartOver(false)}
+        onConfirm={() => {
+          setAskStartOver(false);
+          void startOver();
+        }}
+      />
     </Screen>
   );
 }
