@@ -3,7 +3,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 export const DATABASE_NAME = 'plantquest.db';
 
 // Bump this and add a step below whenever the tables change, so app updates keep students' progress.
-const DATABASE_VERSION = 2;
+const DATABASE_VERSION = 3;
 
 export async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
@@ -62,6 +62,12 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase) {
     // v2: chosen profile avatar (null = default look).
     await db.execAsync('ALTER TABLE profile ADD COLUMN avatar TEXT');
     version = 2;
+  }
+
+  if (version === 2) {
+    // v3: sound effects and auto read-aloud on/off.
+    await db.execAsync('ALTER TABLE profile ADD COLUMN sound_on INTEGER NOT NULL DEFAULT 1');
+    version = 3;
   }
 
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);

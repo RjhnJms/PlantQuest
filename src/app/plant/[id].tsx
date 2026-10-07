@@ -14,7 +14,7 @@ import { getPlant, type PartKey } from '@/data/plants';
 import { feedback } from '@/lib/feedback';
 import { useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { speak, stopSpeaking } from '@/lib/speech';
+import { autoSpeak, stopSpeaking } from '@/lib/speech';
 
 /** Plant details: big drawing with tap-to-learn parts, a fun fact, and the plant's quiz. */
 export default function PlantDetails() {
@@ -39,7 +39,7 @@ export default function PlantDetails() {
   }, [plant, viewPlant]);
 
   useEffect(() => {
-    if (snapshot.profile.autoRead && plant) speak(`intro-${plant.id}`, plant.intro);
+    if (snapshot.profile.autoRead && plant) autoSpeak(`intro-${plant.id}`, plant.intro);
     return () => stopSpeaking();
   }, [plant, snapshot.profile.autoRead]);
 
@@ -53,7 +53,7 @@ export default function PlantDetails() {
     if (!info) return;
     setSelected(key);
     feedback.tap();
-    speak(`part-${plant.id}-${key}`, `${info.name}. ${info.text}`);
+    autoSpeak(`part-${plant.id}-${key}`, `${info.name}. ${info.text}`);
     const earned = await tapPart(plant.id, key, plant.parts.map((p) => p.key));
     if (earned) {
       setToast(`You found every part! +${earned} leaves`);

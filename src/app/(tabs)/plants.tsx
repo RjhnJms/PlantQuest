@@ -8,7 +8,7 @@ import { PLANTS } from '@/data/plants';
 import { feedback } from '@/lib/feedback';
 import { plantStatus, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { speak } from '@/lib/speech';
+import { autoSpeak } from '@/lib/speech';
 
 /** Plants: every plant as a colorful card. Locked plants show as mystery cards. */
 export default function Plants() {
@@ -31,7 +31,7 @@ export default function Plants() {
               onPress={() => {
                 if (locked) {
                   feedback.tryAgain();
-                  speak('locked', `Keep exploring to unlock this plant!`);
+                  autoSpeak('locked', `Keep exploring to unlock this plant!`);
                   return;
                 }
                 feedback.tap();

@@ -16,13 +16,15 @@
     "android": {
       "package": "com.rejohnjames.plantquest",
       "adaptiveIcon": {
-        "backgroundColor": "#FFF8E7"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#7FD4F7"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "single",
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       [
@@ -37,7 +39,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFF8E7"
+          "backgroundColor": "#FFF8E7",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200
         }
       ],
       "expo-sqlite",
@@ -45,6 +49,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "icon": "./assets/images/icon.png"
   }
 }

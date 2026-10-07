@@ -19,6 +19,19 @@ export function setSpeechRate(value: number) {
   rate = value;
 }
 
+let autoSpeech = true;
+
+/** Off when the student turns Sound off: the app stops talking on its own, but speaker buttons still work. */
+export function setAutoSpeech(on: boolean) {
+  autoSpeech = on;
+  if (!on) stopSpeaking();
+}
+
+/** Speech the app starts by itself (Binhi's lines, auto-read, quiz feedback). Silent when Sound is off. */
+export function autoSpeak(id: string, text: string) {
+  if (autoSpeech) speak(id, text);
+}
+
 export function speak(id: string, text: string) {
   void Speech.stop();
   setSpeaking(id);

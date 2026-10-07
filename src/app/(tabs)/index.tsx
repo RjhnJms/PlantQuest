@@ -11,13 +11,14 @@ import { Binhi } from '@/components/art/Binhi';
 import { PlantArt } from '@/components/art/PlantArt';
 import { SkyScene } from '@/components/art/SkyScene';
 import { ProgressBar } from '@/components/ProgressBar';
+import { SoundToggle } from '@/components/SoundToggle';
 import { SpeakButton } from '@/components/SpeakButton';
 import { StatPill } from '@/components/StatPill';
 import { PLANTS, type Plant } from '@/data/plants';
 import { feedback } from '@/lib/feedback';
 import { displayName, plantStatus, stageFor, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { speak } from '@/lib/speech';
+import { autoSpeak } from '@/lib/speech';
 
 const TICKLES = ['Hee hee, that tickles!', 'Let us learn something new!', 'I love sunshine!', 'More leaves, please!', 'You are doing great!'];
 
@@ -58,19 +59,21 @@ export default function Home() {
         <View style={{ height: 210 }}>
           <SkyScene height={210} />
           <SafeAreaView edges={['top']}>
+            {/* Row 1: greeting (room for long names) and the sound switch. Row 2: counters. */}
             <View className="flex-row items-center justify-between px-5 pt-2">
-              <View className="flex-row items-center gap-2 rounded-full bg-white py-1 pl-1 pr-4" style={{ borderBottomWidth: 3, borderBottomColor: colors.sandDark }}>
+              <View className="mr-3 flex-shrink flex-row items-center gap-2 rounded-full bg-white py-1 pl-1 pr-4" style={{ borderBottomWidth: 3, borderBottomColor: colors.sandDark }}>
                 <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.navigate('/profile')}>
                   <Avatar id={snapshot.profile.avatar} size={38} />
                 </Pressable>
-                <Text className="font-heading text-[18px] text-ink" numberOfLines={1}>
+                <Text className="flex-shrink font-heading text-[18px] text-ink" numberOfLines={1}>
                   Hi, {name}!
                 </Text>
               </View>
-              <View className="flex-row gap-2">
-                <StatPill kind="days" value={snapshot.daysVisited} />
-                <StatPill kind="leaves" value={snapshot.leaves} />
-              </View>
+              <SoundToggle size={40} />
+            </View>
+            <View className="mt-2 flex-row gap-2 px-5">
+              <StatPill kind="days" value={snapshot.daysVisited} />
+              <StatPill kind="leaves" value={snapshot.leaves} />
             </View>
           </SafeAreaView>
         </View>
@@ -86,7 +89,7 @@ export default function Home() {
                 setTalk(line);
                 setHop((h) => h + 1);
                 feedback.tap();
-                speak('binhi-home', line);
+                autoSpeak('binhi-home', line);
               }}>
               <Binhi stage={growth.stage} mood={talk ? 'cheer' : 'happy'} size={78} hopKey={hop} />
             </Pressable>
@@ -163,7 +166,7 @@ function PathStop({
           if (locked) {
             feedback.tryAgain();
             shake.set(withSequence(withTiming(-8, { duration: 60 }), withTiming(8, { duration: 80 }), withTiming(-5, { duration: 70 }), withTiming(0, { duration: 60 })));
-            speak('locked', `Finish the plant before ${plant.name} to unlock it!`);
+            autoSpeak('locked', `Finish the plant before ${plant.name} to unlock it!`);
             return;
           }
           feedback.tap();

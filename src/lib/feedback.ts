@@ -14,6 +14,12 @@ const SOURCES = {
 export type SoundName = keyof typeof SOURCES;
 
 const players: Partial<Record<SoundName, AudioPlayer>> = {};
+let soundOn = true;
+
+/** Mirrors the student's Sound setting (set from the root layout). Vibration is not affected. */
+export function setSoundEnabled(on: boolean) {
+  soundOn = on;
+}
 
 function player(name: SoundName) {
   if (!players[name]) players[name] = createAudioPlayer(SOURCES[name]);
@@ -21,6 +27,7 @@ function player(name: SoundName) {
 }
 
 export function playSound(name: SoundName) {
+  if (!soundOn) return;
   try {
     const p = player(name);
     void p.seekTo(0);

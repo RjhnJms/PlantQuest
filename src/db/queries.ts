@@ -11,6 +11,7 @@ export type Profile = {
   onboarded: boolean;
   autoRead: boolean;
   speechRate: number;
+  soundOn: boolean;
 };
 
 export type PlantProgress = {
@@ -60,7 +61,8 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
     onboarded: number;
     auto_read: number;
     speech_rate: number;
-  }>('SELECT name, grade, avatar, joined_at, onboarded, auto_read, speech_rate FROM profile WHERE id = 1');
+    sound_on: number;
+  }>('SELECT name, grade, avatar, joined_at, onboarded, auto_read, speech_rate, sound_on FROM profile WHERE id = 1');
   const leaves = await db.getFirstAsync<{ total: number | null }>('SELECT SUM(amount) AS total FROM leaves_log');
   const rows = await db.getAllAsync<{ plant_id: string; parts_tapped: string; completed: number }>(
     'SELECT plant_id, parts_tapped, completed FROM plant_progress',
@@ -91,6 +93,7 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
       onboarded: p?.onboarded === 1,
       autoRead: (p?.auto_read ?? 1) === 1,
       speechRate: p?.speech_rate ?? 0.85,
+      soundOn: (p?.sound_on ?? 1) === 1,
     },
     leaves: leaves?.total ?? 0,
     progress,
@@ -102,7 +105,7 @@ export async function loadSnapshot(db: SQLiteDatabase): Promise<GameSnapshot> {
 
 export async function saveProfile(
   db: SQLiteDatabase,
-  fields: Partial<Pick<Profile, 'name' | 'grade' | 'avatar' | 'onboarded' | 'autoRead' | 'speechRate'>>,
+  fields: Partial<Pick<Profile, 'name' | 'grade' | 'avatar' | 'onboarded' | 'autoRead' | 'speechRate' | 'soundOn'>>,
 ) {
   const sets: string[] = [];
   const values: (string | number | null)[] = [];
@@ -125,6 +128,10 @@ export async function saveProfile(
   if ('autoRead' in fields) {
     sets.push('auto_read = ?');
     values.push(fields.autoRead ? 1 : 0);
+  }
+  if ('soundOn' in fields) {
+    sets.push('sound_on = ?');
+    values.push(fields.soundOn ? 1 : 0);
   }
   if ('speechRate' in fields) {
     sets.push('speech_rate = ?');

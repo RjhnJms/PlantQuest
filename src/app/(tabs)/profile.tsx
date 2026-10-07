@@ -8,6 +8,7 @@ import { Binhi } from '@/components/art/Binhi';
 import { PlantArt } from '@/components/art/PlantArt';
 import { ChunkyButton } from '@/components/ChunkyButton';
 import { Screen, ScreenTitle } from '@/components/Screen';
+import { SoundToggle } from '@/components/SoundToggle';
 import { PLANTS } from '@/data/plants';
 import { feedback } from '@/lib/feedback';
 import { displayName, stageFor, useGame } from '@/lib/game';
@@ -137,8 +138,15 @@ export default function Profile() {
       </View>
 
       {/* Read-aloud */}
-      <Text className="mb-3 mt-7 px-5 font-heading text-[22px] text-ink">Read aloud</Text>
+      <Text className="mb-3 mt-7 px-5 font-heading text-[22px] text-ink">Sound and reading</Text>
       <View className="mx-5 rounded-3xl bg-white px-4 py-2" style={{ borderBottomWidth: 5, borderBottomColor: colors.sandDark }}>
+        <View className="flex-row items-center justify-between py-2">
+          <View className="flex-1 pr-3">
+            <Text className="font-heading text-[18px] text-ink">Sounds</Text>
+            <Text className="font-body text-[14px] text-muted">Turn off for a quiet classroom. Speaker buttons still work.</Text>
+          </View>
+          <SoundToggle size={44} />
+        </View>
         <View className="flex-row items-center justify-between py-2">
           <View className="flex-1 pr-3">
             <Text className="font-heading text-[18px] text-ink">Read questions to me</Text>

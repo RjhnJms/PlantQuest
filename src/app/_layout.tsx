@@ -14,9 +14,10 @@ import { Pressable, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DATABASE_NAME, migrateDbIfNeeded } from '@/db/schema';
+import { setSoundEnabled } from '@/lib/feedback';
 import { GameProvider, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { setSpeechRate } from '@/lib/speech';
+import { setAutoSpeech, setSpeechRate } from '@/lib/speech';
 
 import '../global.css';
 
@@ -57,11 +58,16 @@ export default function RootLayout() {
 
 function RootNavigator() {
   const { snapshot } = useGame();
-  const { onboarded, speechRate } = snapshot.profile;
+  const { onboarded, speechRate, soundOn } = snapshot.profile;
 
   useEffect(() => {
     setSpeechRate(speechRate);
   }, [speechRate]);
+
+  useEffect(() => {
+    setSoundEnabled(soundOn);
+    setAutoSpeech(soundOn);
+  }, [soundOn]);
 
   useEffect(() => {
     void SplashScreen.hideAsync();

@@ -10,6 +10,7 @@ import { PlantArt } from '@/components/art/PlantArt';
 import { ChunkyButton } from '@/components/ChunkyButton';
 import { Confetti } from '@/components/Confetti';
 import { ProgressBar } from '@/components/ProgressBar';
+import { SoundToggle } from '@/components/SoundToggle';
 import { SpeakButton } from '@/components/SpeakButton';
 import { getPlant, type PartKey } from '@/data/plants';
 import { levelQuiz, plantQuiz, type Level, type Question } from '@/data/questions';
@@ -18,7 +19,7 @@ import { feedback } from '@/lib/feedback';
 import { goBack } from '@/lib/nav';
 import { displayName, stageFor, useGame } from '@/lib/game';
 import { colors } from '@/lib/palette';
-import { speak, stopSpeaking } from '@/lib/speech';
+import { autoSpeak, stopSpeaking } from '@/lib/speech';
 
 const LETTER_COLORS = [colors.skyDark, colors.coral, colors.grape, colors.teal];
 const CHEERS = ['Amazing!', 'Great job!', 'You got it!', 'Super!', 'Wow!'];
@@ -62,7 +63,7 @@ export default function Play() {
   const mood: BinhiMood = !checked ? 'happy' : isCorrect ? 'cheer' : 'encourage';
 
   useEffect(() => {
-    if (q && !result && snapshot.profile.autoRead) speak(`q-${q.id}`, q.prompt);
+    if (q && !result && snapshot.profile.autoRead) autoSpeak(`q-${q.id}`, q.prompt);
   }, [q, result, snapshot.profile.autoRead]);
 
   useEffect(() => () => stopSpeaking(), []);
@@ -81,10 +82,10 @@ export default function Play() {
       feedback.correct();
       setHop((h) => h + 1);
       setParty((p) => p + 1);
-      speak(`fb-${q.id}`, `${cheer} ${q.explain}`);
+      autoSpeak(`fb-${q.id}`, `${cheer} ${q.explain}`);
     } else {
       feedback.tryAgain();
-      speak(`fb-${q.id}`, `Good try! The answer is ${answerLabel(q)}. ${q.explain}`);
+      autoSpeak(`fb-${q.id}`, `Good try! The answer is ${answerLabel(q)}. ${q.explain}`);
     }
   };
 
@@ -142,6 +143,7 @@ export default function Play() {
             <Leaf size={18} color={colors.leafDark} strokeWidth={2.8} />
             <Text className="font-heading text-[17px] text-leaf-dark">{snapshot.leaves}</Text>
           </View>
+          <SoundToggle size={36} />
         </View>
 
         <ScrollView contentContainerClassName="px-5 pb-6" showsVerticalScrollIndicator={false}>
@@ -369,7 +371,7 @@ function Results({
   useEffect(() => {
     if (grewUp) feedback.levelUp();
     else feedback.reward();
-    speak('results', `${title} You got ${score} out of ${total}. You earned ${earned} leaves. ${line}`);
+    autoSpeak('results', `${title} You got ${score} out of ${total}. You earned ${earned} leaves. ${line}`);
   }, [grewUp, title, score, total, earned, line]);
 
   return (
